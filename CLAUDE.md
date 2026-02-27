@@ -14,6 +14,11 @@ project-root/
 ├── reference/bot.schema.yaml-authoring.json  # Schema (DO NOT LOAD THIS - it's too long. You'll have helpers to look things inside this file)
 ├── templates/                              # YAML templates for common patterns
 └── src/AGENT-NAME/                         # YAML files representing the agent
+    ├── topics/                             # Conversation topics
+    ├── actions/                            # Connector-based actions
+    ├── knowledge/                          # Knowledge sources
+    ├── variables/                          # Global variables
+    └── agents/                             # Child agents
 ```
 
 **Note**: The `src/AGENT-NAME/` directory is created when you clone your first agent from your environment. It doesn't exist until you clone a Copilot Studio agent. If the user does not know how to clone an agent, point them to the "Copilot Studio Extension inside VS Code".
@@ -46,6 +51,7 @@ The above ones are already used as examples with real parameter values, like "se
 - `/edit-triggers` - Modify topic triggers (phrases and model description)
 - `/add-child-agent` - Add/configure child agents
 - `/add-generative-answers` - Add generative answer nodes (use this instead of `/add-node` for SearchAndSummarizeContent / AnswerQuestionWithAI)
+- `/add-global-variable` - Add a global variable (persists across topics, optionally visible to AI orchestrator)
 
 ## Agent Discovery (Important)
 

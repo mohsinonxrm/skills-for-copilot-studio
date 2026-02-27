@@ -1,0 +1,9 @@
+# Name: _REPLACE_DISPLAY_NAME
+# _REPLACE_DESCRIPTION
+name: _REPLACE_NAME
+aIVisibility: UseInAIContext
+scope: Conversation
+description: _REPLACE_DESCRIPTION
+schemaName: _REPLACE_SCHEMA_PREFIX.globalvariable._REPLACE_NAME
+kind: GlobalVariableComponent
+defaultValue: DEFAULT

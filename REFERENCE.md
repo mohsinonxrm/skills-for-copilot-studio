@@ -12,6 +12,7 @@ This file contains reference tables for Copilot Studio YAML authoring. For workf
 | `topics/*.mcs.yml` | Conversation topics (kind: AdaptiveDialog) |
 | `actions/*.mcs.yml` | Connector-based actions (kind: TaskDialog) |
 | `knowledge/*.mcs.yml` | Knowledge sources (kind: KnowledgeSourceConfiguration) |
+| `variables/*.mcs.yml` | Global variables (kind: GlobalVariableComponent) |
 | `agents/*.mcs.yml` | Child agents (kind: AgentDialog) |
 
 ## Trigger Types
@@ -63,6 +64,16 @@ This file contains reference tables for Copilot Studio YAML authoring. For workf
 | `System.SignInReason` | Why sign-in was triggered |
 | `System.Recognizer.IntentOptions` | Matched intents for disambiguation |
 | `System.Recognizer.SelectedIntent` | User's selected intent |
+
+### Variable Scopes
+
+| Prefix | Scope | Lifetime |
+|--------|-------|----------|
+| `Topic.<name>` | Topic variable | Current topic only |
+| `Global.<name>` | Global variable | Entire conversation (defined in `variables/` folder) |
+| `System.<name>` | System variable | Built-in, read-only |
+
+Global variables are defined as YAML files in `variables/<Name>.mcs.yml` (kind: `GlobalVariableComponent`). Set `aIVisibility: UseInAIContext` to make them visible to the AI orchestrator.
 
 ## Prebuilt Entities
 
@@ -236,3 +247,4 @@ Use only when you want the model to respond from conversation history and genera
 | Connector Action | `templates/actions/connector-action.mcs.yml` | TaskDialog with connector |
 | Knowledge (Public Website) | `templates/knowledge/public-website.knowledge.mcs.yml` | PublicSiteSearchSource |
 | Knowledge (SharePoint) | `templates/knowledge/sharepoint.knowledge.mcs.yml` | SharePointSearchSource |
+| Global Variable | `templates/variables/global-variable.variable.mcs.yml` | GlobalVariableComponent |
