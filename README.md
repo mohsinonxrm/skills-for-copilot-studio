@@ -78,6 +78,7 @@ After making changes, push them back using the **Copilot Studio VS Code Extensio
 | `/edit-triggers` | Modify topic triggers (phrases and model description) |
 | `/add-child-agent` | Add/configure child agents |
 | `/add-generative-answers` | Add generative answer nodes |
+| `/add-global-variable` | Add a global variable |
 
 ## Key Resources
 
