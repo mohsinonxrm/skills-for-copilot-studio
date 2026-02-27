@@ -76,6 +76,8 @@ This file contains reference tables for Copilot Studio YAML authoring. For workf
 
 ## Power Fx Expression Reference
 
+**Only use functions from the supported list below.** Copilot Studio supports a subset of Power Fx — using unsupported functions will cause errors.
+
 ```yaml
 # Arithmetic
 value: =Text(Topic.number1 + Topic.number2)
@@ -104,6 +106,26 @@ variable: init:Topic.CurrentTime
 # Subsequent assignments omit init:
 variable: Topic.UserEmail
 ```
+
+### Supported Power Fx Functions
+
+These are **all** the Power Fx functions available in Copilot Studio. Do NOT use any function not on this list.
+
+**Math**: `Abs`, `Acos`, `Acot`, `Asin`, `Atan`, `Atan2`, `Cos`, `Cot`, `Degrees`, `Exp`, `Int`, `Ln`, `Log`, `Mod`, `Pi`, `Power`, `Radians`, `Rand`, `RandBetween`, `Round`, `RoundDown`, `RoundUp`, `Sin`, `Sqrt`, `Sum`, `Tan`, `Trunc`
+
+**Text**: `Char`, `Concat`, `Concatenate`, `EncodeHTML`, `EncodeUrl`, `EndsWith`, `Find`, `Left`, `Len`, `Lower`, `Match`, `MatchAll`, `Mid`, `PlainText`, `Proper`, `Replace`, `Right`, `Search`, `Split`, `StartsWith`, `Substitute`, `Text`, `Trim`, `TrimEnds`, `UniChar`, `Upper`, `Value`
+
+**Date/Time**: `Date`, `DateAdd`, `DateDiff`, `DateTime`, `DateTimeValue`, `DateValue`, `Day`, `EDate`, `EOMonth`, `Hour`, `IsToday`, `Minute`, `Month`, `Now`, `Second`, `Time`, `TimeValue`, `TimeZoneOffset`, `Today`, `Weekday`, `WeekNum`, `Year`
+
+**Logical**: `And`, `Coalesce`, `If`, `IfError`, `IsBlank`, `IsBlankOrError`, `IsEmpty`, `IsError`, `IsMatch`, `IsNumeric`, `IsType`, `Not`, `Or`, `Switch`
+
+**Table**: `AddColumns`, `Column`, `ColumnNames`, `Count`, `CountA`, `CountIf`, `CountRows`, `Distinct`, `DropColumns`, `Filter`, `First`, `FirstN`, `ForAll`, `Index`, `Last`, `LastN`, `LookUp`, `Patch`, `Refresh`, `RenameColumns`, `Sequence`, `ShowColumns`, `Shuffle`, `Sort`, `SortByColumns`, `Summarize`, `Table`
+
+**Aggregate**: `Average`, `Max`, `Min`, `StdevP`, `VarP`
+
+**Type conversion**: `AsType`, `Boolean`, `Dec2Hex`, `Decimal`, `Float`, `GUID`, `Hex2Dec`, `JSON`, `ParseJSON`
+
+**Other**: `Blank`, `ColorFade`, `ColorValue`, `Error`, `Language`, `OptionSetInfo`, `RGBA`, `Trace`, `With`
 
 ## Generative Orchestration Patterns
 

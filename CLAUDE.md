@@ -82,6 +82,7 @@ A good practice to avoid conflict would be to use 6-8 random characters after th
 - String interpolation uses `{}`: `activity: "Error: {System.Error.Message}"`
 - Variable init on first assignment: `variable: init:Topic.MyVar`
 - `System.Activity.Text` is the last message sent by the user — commonly used as input for `SearchAndSummarizeContent` and other nodes that need the user's query
+- **Only use supported functions** — Copilot Studio supports a subset of Power Fx. Check the supported functions list in [REFERENCE.md](./REFERENCE.md) before writing expressions
 
 ## Publish new changes: Workflow
 
