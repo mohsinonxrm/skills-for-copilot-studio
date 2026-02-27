@@ -1,12 +1,12 @@
 ---
-description: Add a public website knowledge source to a Copilot Studio agent. Use when the user asks to add a knowledge source, documentation URL, or website for the agent to search.
-argument-hint: <website-url>
+description: Add a knowledge source (public website or SharePoint) to a Copilot Studio agent. Use when the user asks to add a knowledge source, documentation URL, website, or SharePoint site for the agent to search.
+argument-hint: <url>
 allowed-tools: Bash(python *), Read, Write, Glob
 ---
 
 # Add Knowledge Source
 
-Add a public website knowledge source to the agent.
+Add a knowledge source to the agent. Supports **Public Website** and **SharePoint** sources.
 
 ## Instructions
 
@@ -17,43 +17,54 @@ Add a public website knowledge source to the agent.
    NEVER hardcode an agent name.
 
 2. **Parse the arguments** to extract:
-   - Website URL
-   - Description (optional)
+   - URL
+   - Name / description (optional)
 
-3. **Look up the knowledge source schema**:
+3. **Determine the source type** from the URL:
+   - If the URL contains `sharepoint.com` → use `SharePointSearchSource`
+   - Otherwise → use `PublicSiteSearchSource`
+
+4. **Look up the knowledge source schema**:
    ```bash
    python scripts/schema-lookup.py resolve KnowledgeSourceConfiguration
-   python scripts/schema-lookup.py resolve PublicSiteSearchSource
    ```
 
-4. **Generate the knowledge source YAML**:
+5. **Generate the knowledge source YAML**.
 
+   **Public Website:**
    ```yaml
-   # Name: <Description or domain name>
+   # Name: <Name>
+   # <Description of what this knowledge source provides>
    kind: KnowledgeSourceConfiguration
    source:
      kind: PublicSiteSearchSource
-     site: <URL>
+     site: https://www.example.com
    ```
 
-5. **Save** to `src/<agent-name>/knowledge/<descriptive-name>.knowledge.mcs.yml`
+   **SharePoint:**
+   ```yaml
+   # Name: <Name>
+   # <Description of what this knowledge source provides>
+   kind: KnowledgeSourceConfiguration
+   source:
+     kind: SharePointSearchSource
+     site: https://contoso.sharepoint.com/sites/MySite/Shared%20Documents/MyFolder
+   ```
 
-## URL Guidelines
+6. **Always include `# Name:` and a description comment** at the top. These are important for identifying the knowledge source.
 
-- URLs should be HTTPS
-- Limit to 2 path segments (e.g., `https://contoso.com/docs/section`)
-- Avoid query parameters
-- Ensure the site is publicly accessible
+7. **Save** to `src/<agent-name>/knowledge/<descriptive-name>.knowledge.mcs.yml`
 
 ## Limitations
 
-**This skill can ONLY create Public Website knowledge sources.**
+**This skill can create Public Website and SharePoint knowledge sources.**
 
 For other types, inform the user:
 
 > "The following knowledge source types must be created through the Copilot Studio UI as they require Power Platform configuration:
 > - Dataverse tables
-> - Graph Connectors
-> - File uploads
+> - Uploaded files
+> - AI Search
+> - SQL Server
 >
-> Please create these in the portal, then export the solution to edit them here."
+> Please create these in the portal, then clone the solution to edit them here."

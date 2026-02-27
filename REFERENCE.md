@@ -212,4 +212,5 @@ Use only when you want the model to respond from conversation history and genera
 | Disambiguation | `templates/topics/disambiguation.topic.mcs.yml` | OnSelectIntent flow |
 | Agent | `templates/agents/agent.mcs.yml` | GptComponentMetadata |
 | Connector Action | `templates/actions/connector-action.mcs.yml` | TaskDialog with connector |
-| Knowledge Source | `templates/knowledge/public-website.knowledge.mcs.yml` | Public website |
+| Knowledge (Public Website) | `templates/knowledge/public-website.knowledge.mcs.yml` | PublicSiteSearchSource |
+| Knowledge (SharePoint) | `templates/knowledge/sharepoint.knowledge.mcs.yml` | SharePointSearchSource |
