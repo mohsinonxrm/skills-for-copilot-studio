@@ -54,6 +54,34 @@ This file contains reference tables for Copilot Studio YAML authoring. For workf
 | `SearchKnowledgeSources` | Search knowledge sources (returns raw results, no AI summary) |
 | `CreateSearchQuery` | AI-generated search query from user input |
 
+## Connector Actions (TaskDialog)
+
+Connector actions (`kind: TaskDialog`) invoke external connector operations. They are stored in `src/<agent>/actions/` and require a connection reference in `connectionreferences.mcs.yml`.
+
+**Use `/add-action` to create actions from the verified catalog.** The schema can describe the structural properties of `TaskDialog` and `InvokeConnectorTaskAction`, but the specific inputs and outputs for each connector operation are connector-specific — use only verified sample templates.
+
+### Action Structure
+
+| Field | Purpose |
+|-------|---------|
+| `kind: TaskDialog` | Identifies this as a connector action |
+| `inputs` | Inputs: `AutomaticTaskInput` (AI-provided) or `ManualTaskInput` (fixed value) |
+| `modelDisplayName` | Display name for AI orchestrator routing |
+| `modelDescription` | Description for AI orchestrator routing |
+| `outputs` | Output property names returned by the connector |
+| `action.kind` | Always `InvokeConnectorTaskAction` for connector actions |
+| `action.connectionReference` | Logical name of the connection (registered in `connectionreferences.mcs.yml`) |
+| `action.connectionProperties.mode` | `Maker` (maker's credentials) or `Invoker` (end user's credentials) |
+| `action.operationId` | The connector's specific operation identifier |
+| `outputMode` | Usually `All` — exports all operation outputs |
+
+### Input Types
+
+| Input Kind | Use When | Notes |
+|------------|----------|-------|
+| `AutomaticTaskInput` | The AI orchestrator should provide the value based on context | Includes `description` for the AI to understand what to provide |
+| `ManualTaskInput` | A fixed/hardcoded value (e.g., timezone, folder path) | Can only hardcode **strings**. Non-string values (IDs, enums) should be reviewed by the user after pushing |
+
 ## System Variables
 
 | Variable | Description |
@@ -162,7 +190,9 @@ These are **all** the Power Fx functions available in Copilot Studio. Do NOT use
 | Error Handler | `templates/topics/error-handler.topic.mcs.yml` | OnError with telemetry |
 | Disambiguation | `templates/topics/disambiguation.topic.mcs.yml` | OnSelectIntent flow |
 | Agent | `templates/agents/agent.mcs.yml` | GptComponentMetadata |
-| Connector Action | `templates/actions/connector-action.mcs.yml` | TaskDialog with connector |
+| Connector Action (generic) | `templates/actions/connector-action.mcs.yml` | TaskDialog with connector (structural reference) |
+| Action: Teams Post Message | `templates/actions/samples/teams-post-message.yml` | TaskDialog — Post message in Teams chat/channel |
+| Action: Outlook Create Event | `templates/actions/samples/outlook-create-event.yml` | TaskDialog — Create Outlook calendar event |
 | Knowledge (Public Website) | `templates/knowledge/public-website.knowledge.mcs.yml` | PublicSiteSearchSource |
 | Knowledge (SharePoint) | `templates/knowledge/sharepoint.knowledge.mcs.yml` | SharePointSearchSource |
 | Global Variable | `templates/variables/global-variable.variable.mcs.yml` | GlobalVariableComponent |
