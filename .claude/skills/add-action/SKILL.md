@@ -123,3 +123,17 @@ When a sample contains `ManualTaskInput` entries (fixed values like timezone str
 - List each `ManualTaskInput` with its current value
 - Note that `ManualTaskInput` can only hardcode **string values**. If the intended value is an ID, enum, or other non-string type, the user should review these in Copilot Studio after pushing and potentially adjust them
 - Ask the user if they want to change any values before saving
+
+## UI-Configurable Inputs Warning (Important)
+
+Some `AutomaticTaskInput` fields represent choices that can only be properly configured in the Copilot Studio UI after pushing — they are enum-like selections presented as dropdowns/picklists in the portal, not free-text values the orchestrator can resolve.
+
+**Always review each AutomaticTaskInput in the sample and warn the user about inputs that require UI configuration.** Common examples:
+- **Teams "poster"** (Post As): User / Flow Bot / Copilot Studio Agent — must be selected in the UI
+- **Teams "location"** (Post In): Specific chat or channel — must be selected in the UI
+- **Outlook calendar/folder selections**: Must be picked from the user's actual mailbox in the UI
+
+**After creating the action, always tell the user:**
+1. Push the changes via the VS Code Extension
+2. Open the action in Copilot Studio
+3. Configure the UI-only inputs (list them specifically, e.g., "Set 'Post As' to Flow Bot and 'Post In' to your desired chat/channel")
