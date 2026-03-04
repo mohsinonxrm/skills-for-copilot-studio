@@ -82,6 +82,10 @@ source:
 
 Use global variables (via `/add-global-variable`) combined with Power Fx `LookUp()` to set region or context-based values, then reference them in knowledge source URLs. This enables a single knowledge source configuration to route to different content per user.
 
+## Knowledge Architecture & Best Practices
+
+For detailed guidance on how knowledge retrieval works, source selection, content quality, security, maintenance, and advanced patterns like `triggerCondition`, see [knowledge-guide.md](knowledge-guide.md).
+
 ## Limitations
 
 **This skill can create Public Website and SharePoint knowledge sources.**
