@@ -45,6 +45,10 @@ Modify agent metadata (`agent.mcs.yml`) or configuration (`settings.mcs.yml`).
 | `configuration.aISettings.*` | AI capabilities | Various booleans |
 | `configuration.settings.*.content.capabilities.webBrowsing` | Web browsing | `true` / `false` |
 
+## Writing Effective Instructions
+
+For detailed guidance on writing knowledge-aware instructions, grounding directives, citation control, and scope enforcement, see [instructions-guide.md](instructions-guide.md).
+
 ## Fields to NEVER Modify
 
 - `schemaName` — This is the internal Power Platform identifier. Changing it breaks the agent.

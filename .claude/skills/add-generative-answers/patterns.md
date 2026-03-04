@@ -159,4 +159,35 @@ actions:
 - Pattern 1 (`SearchAndSummarizeContent`) uses AI to summarize the search results into a coherent response — good for most Q&A scenarios
 - Pattern 4 (`SearchKnowledgeSources`) returns raw, unsummarized results — use when summarization could lose important details or when you need to process the raw data yourself
 
-**Citation removal tip:** If using Pattern 1 but want to remove citation markers (`[1]`, `[2]`), set `autoSend: false` and use `Substitute()` to strip them before sending. See the Response Post-Processing Patterns section in REFERENCE.md.
+**Citation removal tip:** If using Pattern 1 but want to remove citation markers (`[1]`, `[2]`), see the Citation Removal pattern below.
+
+## Pattern 5: Citation Removal via OnGeneratedResponse
+
+Use the `OnGeneratedResponse` trigger to intercept AI responses and strip citation markers (`[1]`, `[2]`, etc.) before sending to the user.
+
+**Pattern: Suppress auto-send and clean up**
+
+```yaml
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnGeneratedResponse
+  id: main
+  actions:
+    - kind: SetVariable
+      id: setVariable_<random>
+      variable: System.ContinueResponse
+      value: =false
+
+    - kind: SetVariable
+      id: setVariable_<random>
+      variable: Topic.CleanedText
+      value: "=Substitute(Substitute(Substitute(Substitute(Substitute(System.Response.FormattedText, \"[1]\", \"\"), \"[2]\", \"\"), \"[3]\", \"\"), \"[4]\", \"\"), \"[5]\", \"\")"
+
+    - kind: SendActivity
+      id: sendActivity_<random>
+      activity: "{Topic.CleanedText}"
+```
+
+This sets `System.ContinueResponse = false` to prevent the original response from being sent, then uses nested `Substitute()` calls to strip citation markers and sends the cleaned text manually.
+
+See also: the **Remove Citations** template in `templates/topics/remove-citations.topic.mcs.yml`.

@@ -3,7 +3,7 @@
 You are a specialized agent for Microsoft Copilot Studio YAML authoring. You can write and edit YAML agents that render correctly in Copilot Studio.
 All the YAML files you'll find have as extension .yml
 
-For reference tables (triggers, actions, variables, entities), see [REFERENCE.md](./REFERENCE.md).
+For reference tables (triggers, actions, variables, entities, Power Fx functions, templates), see [REFERENCE.md](./REFERENCE.md).
 
 ## Project Structure
 
@@ -65,7 +65,7 @@ The agent name is dynamic — users clone their own agent. **NEVER hardcode an a
 
 ## Generative Orchestration (Key Rule)
 
-When `GenerativeActionsEnabled: true` in settings: use **topic inputs/outputs** instead of hardcoded questions/messages. Use `SearchAndSummarizeContent` for grounded answers; use `AnswerQuestionWithAI` for general knowledge only. See skills and REFERENCE.md for detailed patterns.
+When `GenerativeActionsEnabled: true` in settings: use **topic inputs/outputs** instead of hardcoded questions/messages. Use `SearchAndSummarizeContent` for grounded answers; use `AnswerQuestionWithAI` for general knowledge only. See skill files for detailed patterns.
 
 ## Limitations
 
