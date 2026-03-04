@@ -37,8 +37,8 @@ This file contains reference tables for Copilot Studio YAML authoring. For workf
 |------|---------|
 | `SendActivity` | Send a message |
 | `Question` | Ask user for input |
-| `SetVariable` | Set/compute a variable |
-| `SetTextVariable` | Set text directly |
+| `SetVariable` | Set/compute a variable (Power Fx expression, prefix `=`) |
+| `SetTextVariable` | Set a text variable using template interpolation (`{}`). Useful for converting non-text types (e.g., Number) to text: `"You have {Topic.Count} items"` |
 | `ConditionGroup` | Branching logic |
 | `BeginDialog` | Call another topic |
 | `ReplaceDialog` | Replace current topic |

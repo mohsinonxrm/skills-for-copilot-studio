@@ -126,3 +126,4 @@ When a topic exists alongside other topics or other actions (i.e. TaskDialog), t
 - String interpolation uses `{}`: `activity: "Hello {Topic.UserName}"`
 - Common functions: `Text()`, `Now()`, `IsBlank()`, `!IsBlank()`, `DateTimeFormat.UTC`
 - Variable init: `variable: init:Topic.MyVar` (first assignment uses `init:`)
+- **Type coercion to text**: Use `SetTextVariable` instead of `SetVariable` to convert non-text types (Number, DateTime, etc.) to text via template interpolation: `value: "Guests: {Topic.NumberOfGuests}"`
