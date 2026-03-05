@@ -28,14 +28,16 @@ from microsoft_agents.copilotstudio.client import (
 from microsoft_agents.activity import ActivityTypes
 
 SCRIPT_DIR = Path(__file__).parent
-AGENTS_PATH = SCRIPT_DIR / "agents.json"
-CACHE_PATH = SCRIPT_DIR / ".token_cache.json"
 AUTH_SCOPE = "https://api.powerplatform.com/.default"
+
+# These are set in main() after parsing --config-dir
+AGENTS_PATH = None
+CACHE_PATH = None
 
 
 def load_agent(agent_name=None):
     if not AGENTS_PATH.exists():
-        _die("tests/agents.json not found. Run /chat-with-agent to configure.")
+        _die("agents.json not found at {}. Run /chat-with-agent to configure.".format(AGENTS_PATH))
     with open(AGENTS_PATH, "r", encoding="utf-8") as f:
         registry = json.load(f)
     if not registry:
@@ -156,10 +158,17 @@ def _die(msg):
 
 
 def main():
+    global AGENTS_PATH, CACHE_PATH
+
     parser = argparse.ArgumentParser(
         description="Send an utterance to a published Copilot Studio agent."
     )
     parser.add_argument("utterance", help="Message to send to the agent")
+    parser.add_argument(
+        "--config-dir",
+        required=True,
+        help="Directory containing agents.json and token cache (user's project tests/ dir)",
+    )
     parser.add_argument(
         "--conversation-id",
         default=None,
@@ -168,9 +177,13 @@ def main():
     parser.add_argument(
         "--agent",
         default=None,
-        help="Agent name from tests/agents.json (required if multiple agents registered)",
+        help="Agent name from agents.json (required if multiple agents registered)",
     )
     args = parser.parse_args()
+
+    config_dir = Path(args.config_dir).resolve()
+    AGENTS_PATH = config_dir / "agents.json"
+    CACHE_PATH = config_dir / ".token_cache.json"
 
     cfg = load_agent(args.agent)
 
