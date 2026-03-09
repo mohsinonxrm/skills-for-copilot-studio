@@ -9,7 +9,7 @@ agent: test
 
 Run Copilot Studio agent tests, download results, and analyze failures to propose YAML fixes. Supports two modes:
 - **Automatic**: Run tests via Dataverse API (requires Azure app registration and credentials)
-- **Manual**: User runs tests in Copilot Studio UI and shares results with Claude for analysis
+- **Manual**: User runs tests in Copilot Studio UI and shares results with the AI agent for analysis
 
 ## Prerequisites
 

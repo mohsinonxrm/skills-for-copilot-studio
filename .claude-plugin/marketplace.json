@@ -1,6 +1,6 @@
 {
   "name": "copilot-studio-marketplace",
-  "description": "Microsoft Copilot Studio plugins for Claude Code",
+  "description": "Microsoft Copilot Studio plugins for AI coding agents",
   "plugins": [
     {
       "name": "copilot-studio",
