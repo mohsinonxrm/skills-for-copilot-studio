@@ -29,6 +29,7 @@ Create a global variable that persists across all topics within a conversation.
    - Description of what it stores
    - Whether the AI orchestrator should be aware of it (`aIVisibility`)
    - Default value (if any)
+   - DO NOT skip any of these properties. If the user doesn't provide them, ask follow-up questions to get the necessary information.
 
 4. **Create the variable file** at `<agent-dir>/variables/<VariableName>.mcs.yml`:
 
