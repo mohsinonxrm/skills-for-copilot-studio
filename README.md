@@ -6,8 +6,6 @@ Compatible with **Claude Code** and **GitHub Copilot CLI** (any agent that suppo
 
 ## Installation
 
-### From GitHub (recommended)
-
 ```bash
 # Add the marketplace
 /plugin marketplace add microsoft/skills-for-copilot-studio
@@ -16,17 +14,24 @@ Compatible with **Claude Code** and **GitHub Copilot CLI** (any agent that suppo
 /plugin install copilot-studio@microsoft/skills-for-copilot-studio
 ```
 
-### From a local clone (development / testing)
+Once installed, the plugin is available globally — no need to `cd` into this repo.
 
-```bash
-# One-off session — load the plugin without installing
-claude --plugin-dir /path/to/skills-for-copilot-studio
+## Prerequisites
 
-# Or install persistently (available in every project)
-claude plugin install /path/to/skills-for-copilot-studio --scope user
+- An AI coding agent CLI that supports plugins ([Claude Code](https://docs.anthropic.com/en/docs/claude-code) or [GitHub Copilot CLI](https://docs.github.com/en/copilot))
+- [VS Code](https://code.visualstudio.com/) with the [Copilot Studio Extension](https://github.com/microsoft/vscode-copilotstudio)
+
+## Usage
+
+The plugin provides three specialized agents: **author**, **test**, and **troubleshoot**. The recommended way to interact is by tagging the agent directly:
+
+```
+@copilot-studio:author Create a new topic for handling return requests
+@copilot-studio:test Run my test set and analyze failures
+@copilot-studio:troubleshoot The greeting topic isn't triggering — why?
 ```
 
-Once installed, the plugin is available globally — no need to `cd` into this repo.
+You can also just describe what you need in plain language — both Claude Code and GitHub Copilot CLI are capable of routing your request to the correct agent automatically. However, **tagging the agent explicitly is advised** as it ensures the right agent is activated immediately with the proper domain context, avoiding any ambiguity.
 
 ## Quick Start — End-to-End Example
 
@@ -51,6 +56,14 @@ cd C:\Users\you\CopilotStudio\MyAgent1
 
 That's it. The plugin auto-discovers your agent's YAML files via `**/agent.mcs.yml`.
 
+## Workflow
+1. **Clone** the agent with the Copilot Studio VS Code Extension into any directory
+2. **Start** your AI coding agent in that directory with the plugin loaded
+3. **Author** changes via `@copilot-studio:author`
+4. **Push** changes with the VS Code Extension (creates a draft)
+5. **Publish** in Copilot Studio UI (makes changes live)
+6. **Test** via `@copilot-studio:test`
+
 ## Three Specialized Agents
 
 Always interact with the plugin through its agents. Each agent has the domain context, reference material, and skills it needs to handle your request end-to-end.
@@ -74,20 +87,6 @@ For multi-step workflows, the AI will chain agents automatically:
 # Delegates to troubleshoot, then to author
 "The greeting topic has a validation error — fix it"
 ```
-
-## Prerequisites
-
-- An AI coding agent CLI that supports plugins ([Claude Code](https://docs.anthropic.com/en/docs/claude-code) or [GitHub Copilot CLI](https://docs.github.com/en/copilot))
-- [VS Code](https://code.visualstudio.com/) with the [Copilot Studio Extension](https://github.com/microsoft/vscode-copilotstudio)
-
-## Workflow
-
-1. **Clone** the agent with the Copilot Studio VS Code Extension into any directory
-2. **Start** your AI coding agent in that directory with the plugin loaded
-3. **Author** changes via `@copilot-studio:author`
-4. **Push** changes with the VS Code Extension (creates a draft)
-5. **Publish** in Copilot Studio UI (makes changes live)
-6. **Test** via `@copilot-studio:test`
 
 ## Plugin Management
 
@@ -126,3 +125,44 @@ For multi-step workflows, the AI will chain agents automatically:
 > - The authors and contributors are not responsible for any issues, data loss, or service disruptions caused by the use of this plugin.
 >
 > By using this plugin, you acknowledge these limitations and accept full responsibility for validating its outputs.
+
+## Contributing
+
+### Local development setup
+
+```bash
+# Clone the repo
+git clone https://github.com/microsoft/skills-for-copilot-studio.git
+cd skills-for-copilot-studio
+
+# Load the plugin from your local clone (one-off session)
+claude --plugin-dir /path/to/skills-for-copilot-studio
+
+# Or install persistently from your local clone
+claude plugin install /path/to/skills-for-copilot-studio --scope user
+```
+
+### Rebuilding the schema lookup script
+
+The schema lookup tool is a Node.js script bundled with [esbuild](https://esbuild.github.io/). The source is in `scripts/src/`, the bundle is `scripts/schema-lookup.bundle.js`.
+
+```bash
+cd scripts
+npm install
+npm run build
+```
+
+### Project structure
+
+```
+.claude-plugin/          # Plugin manifest and marketplace config
+agents/                  # Sub-agent definitions (author, test, troubleshoot)
+hooks/                   # Session hooks (routing instructions)
+skills/                  # Skill definitions (YAML authoring, validation, testing)
+scripts/                 # Schema lookup tool (source + bundled)
+  src/                   # Source code (dev only, gitignored)
+  schema-lookup.bundle.js  # Bundled script (ships with plugin)
+reference/               # Copilot Studio YAML schema
+templates/               # YAML templates for common patterns
+tests/                   # Test runner and chat scripts
+```
