@@ -49,6 +49,15 @@ body:
     attributes:
       label: Actual Result
       description: What the agent actually produced. Include YAML output, error messages, or unexpected behavior.
+      placeholder: |
+        The agent generated a topic but used an invalid kind value:
+
+        ```yaml
+        kind: SendMessage
+        ...
+        ```
+
+        Or paste the error message you received.
       render: markdown
     validations:
       required: true
