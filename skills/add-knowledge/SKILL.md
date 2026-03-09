@@ -85,17 +85,45 @@ When the user wants to connect a **proprietary search API or database** not nati
 
 **Prerequisites:** The user needs a connector action (in `actions/`) that calls their search API. If they don't have one yet, they should create it through the Copilot Studio UI or VS Code extension first.
 
-## Dynamic Knowledge URLs
+## Dynamic Knowledge URLs with Global Variables
 
-Knowledge source URLs support `{VariableName}` placeholders for dynamic routing based on user context:
+Knowledge source URLs support `{VariableName}` placeholders — typically global variables — for dynamic routing based on user context. This is powerful for scenarios where different users need different knowledge sources (e.g., geolocation-specific SharePoint folders, region-specific documentation).
 
+**Pattern**: Define a global variable (via `/copilot-studio:add-global-variable`), populate it early in the conversation (e.g., in an OnActivity/conversation-init topic based on user profile or geolocation), then reference it in the knowledge source URL with Power Fx string interpolation.
+
+**SharePoint example** — a workforce agent that routes to different SharePoint folders per region:
 ```yaml
+# Name: Regional HR KB
+# This knowledge source provides HR information from the {Global.UserKBURL} SharePoint.
+kind: KnowledgeSourceConfiguration
 source:
-  kind: PublicSiteSearchSource
-  site: "https://docs.example.com/{Global.Region}/api"
+  kind: SharePointSearchSource
+  site: =$"{Global.UserKBURL}"
 ```
 
-Use global variables (via `/add-global-variable`) combined with Power Fx `LookUp()` to set region or context-based values, then reference them in knowledge source URLs. This enables a single knowledge source configuration to route to different content per user.
+**Public website example** — documentation site with region-specific subpaths:
+```yaml
+# Name: Regional Docs
+# Documentation for the user's region at {Global.Region}.
+kind: KnowledgeSourceConfiguration
+source:
+  kind: PublicSiteSearchSource
+  site: =$"https://docs.example.com/{Global.Region}/api"
+```
+
+**CRITICAL: URL format for the global variable value**. The variable must contain a **direct, clean URL** — not a SharePoint UI URL with query parameters. Copilot Studio cannot resolve AllItems.aspx links.
+
+| Correct (set this in the global variable) | Wrong (will not work) |
+|---|---|
+| `https://contoso.sharepoint.com/sites/MySite/Shared Documents/MyFolder` | `https://contoso.sharepoint.com/.../AllItems.aspx?id=%2Fsites%2F...&viewid=...` |
+
+Note: spaces are OK in the variable value (unlike static `site:` values which need `%20`), because the Power Fx `$"{Global.UserKBURL}"` expression handles encoding at runtime.
+
+**Implementation checklist** when the user asks for dynamic knowledge:
+1. Create the global variable with `/copilot-studio:add-global-variable` (e.g., `UserKBURL`, `Region`)
+2. Ensure a topic populates it early in the conversation (e.g., via user profile lookup, geolocation, or asking the user)
+3. Create the knowledge source with `=$"{Global.VariableName}"` syntax in the `site:` field
+4. Remind the user: the variable must be set **before** any topic that triggers knowledge search, otherwise the URL will be blank
 
 ## Knowledge Architecture & Best Practices
 

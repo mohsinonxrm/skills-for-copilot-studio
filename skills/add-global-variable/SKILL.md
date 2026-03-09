@@ -84,3 +84,4 @@ Topics reference global variables with the `Global.` prefix:
 - **Cross-topic state**: A value set in one topic needs to be read in another (e.g., user's preferred language, last search query)
 - **AI-aware context**: The orchestrator should know something about the conversation state to make better routing decisions (use `UseInAIContext`)
 - **Conversation-wide defaults**: A default value that multiple topics can read and optionally override
+- **Dynamic knowledge sources**: A global variable can hold a URL that a knowledge source references via `=$"{Global.VarName}"`. This enables routing to different SharePoint folders or websites per user (e.g., by geolocation or department). See `/copilot-studio:add-knowledge` for the full pattern. **Important**: the variable value must be a clean, direct URL — not a SharePoint AllItems.aspx link with query parameters.
