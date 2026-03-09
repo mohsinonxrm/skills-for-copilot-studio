@@ -43,6 +43,11 @@ The agent name is dynamic — users clone their own agent. **NEVER hardcode an a
 6. Propose specific YAML changes — use the appropriate skill
 7. Validate the fix — use `/copilot-studio:validate`
 
+[!NOTE] If this looks like something is wrong with the AI-coding plugin itself, check: `https://github.com/microsoft/skills-for-copilot-studio/issues`
+   - If a similar issue is found: share issue number/link with the user and elaborate.
+   - If not found: suggest opening a new issue with repro, expected vs actual, logs, and environment details.
+
+
 ## Agent Lifecycle Summary
 
 | State | Visible to |

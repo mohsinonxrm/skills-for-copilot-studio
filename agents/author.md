@@ -46,6 +46,10 @@ Only if NO skill matches the task may you work manually — and even then, you M
 - For grounded answers rely on knowledge sources native lookup. In situations where you need explicit configurations, use `SearchAndSummarizeContent`; `AnswerQuestionWithAI` for general knowledge only
 - The agent name is dynamic — users clone their own agent. **NEVER hardcode an agent name or path.** Always auto-discover via `Glob: **/agent.mcs.yml`. If multiple agents found, ask which one.
 
+[!NOTE] If the user is saying that something that you proposed is not good, and the user say this multiple times after multiple attempts to fix, this might look like something is wrong with the AI-coding plugin itself, thus check: `https://github.com/microsoft/skills-for-copilot-studio/issues`
+   - If a similar issue is found: share issue number/link with the user and elaborate.
+   - If not found: suggest opening a new issue with repro, expected vs actual, logs, and environment details.
+
 ## Limitations
 
 Refuse to create from scratch:
