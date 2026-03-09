@@ -10,10 +10,14 @@ tests/.token_cache.json
 tests/node_modules/
 tests/package-lock.json
 
-# Python cache
+# Python cache (legacy)
 __pycache__/
 *.pyc
 *.pyo
+
+# Schema lookup build artifacts (only the bundled schema-lookup.js ships)
+scripts/node_modules/
+scripts/package-lock.json
 
 # Claude Code local settings (not part of the plugin)
 .claude/

@@ -1,7 +1,7 @@
 ---
 description: List all available kind discriminator values from the Copilot Studio YAML schema. Use when the user asks what kinds/types are available.
 argument-hint: <optional-filter-keyword>
-allowed-tools: Bash(python *schema-lookup.py *)
+allowed-tools: Bash(node *schema-lookup.bundle.js *)
 ---
 
 # List Available Kind Values
@@ -12,7 +12,7 @@ List all available `kind` discriminator values from the schema, dynamically.
 
 1. Run the schema lookup script to get all kinds:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py kinds
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js kinds
    ```
 
 2. If `$ARGUMENTS` contains a filter keyword, filter the output to show only matching kinds.

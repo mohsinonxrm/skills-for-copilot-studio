@@ -1,0 +1,16 @@
+{
+  "name": "copilot-studio-schema-lookup",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Schema lookup and YAML validation tool for Copilot Studio plugin",
+  "scripts": {
+    "build": "esbuild src/schema-lookup.js --bundle --platform=node --target=node18 --outfile=schema-lookup.bundle.js --format=cjs",
+    "prebuild": "npm install"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

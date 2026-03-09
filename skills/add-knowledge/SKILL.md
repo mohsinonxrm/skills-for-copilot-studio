@@ -1,7 +1,7 @@
 ---
 description: Add a knowledge source (public website or SharePoint) to a Copilot Studio agent. Use when the user asks to add a knowledge source, documentation URL, website, or SharePoint site for the agent to search.
 argument-hint: <url>
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Glob
 context: fork
 agent: author
 ---
@@ -42,7 +42,7 @@ Add a knowledge source to the agent. Supports **Public Website**, **SharePoint**
 
 5. **Look up the knowledge source schema**:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve KnowledgeSourceConfiguration
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve KnowledgeSourceConfiguration
    ```
 
 6. **Generate the knowledge source YAML**.

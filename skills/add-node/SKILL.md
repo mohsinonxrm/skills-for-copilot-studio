@@ -1,7 +1,7 @@
 ---
 description: Add or modify a node in an existing Copilot Studio topic. Use when the user asks to add a question, message, condition, variable, or other node to a topic. Do NOT use this for generative answers or knowledge search — use /add-generative-answers instead.
 argument-hint: <node-type> to <topic-name>
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Edit, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Edit, Glob
 context: fork
 agent: author
 ---
@@ -29,7 +29,7 @@ In Copilot Studio, the elements inside a topic's `actions` array are **nodes** (
 
 3. **Look up the node schema**:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve <NodeType>
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve <NodeType>
    ```
 
 4. **Read the existing topic file** to understand its current structure.

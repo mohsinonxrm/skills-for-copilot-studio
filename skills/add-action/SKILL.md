@@ -1,7 +1,7 @@
 ---
 description: Add a connector-based action (TaskDialog) to a Copilot Studio agent. Use when the user asks to add a connector action like sending a Teams message, creating an Outlook event, or other connector operations.
 argument-hint: <action description, e.g. "post a Teams message">
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Edit, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Edit, Glob
 context: fork
 agent: author
 ---
@@ -15,8 +15,8 @@ Create a connector-based action (`kind: TaskDialog`) from the verified action ca
 The schema **can** be used to understand the structural properties of `TaskDialog` and `InvokeConnectorTaskAction` (e.g., what `connectionProperties.mode` options exist, what fields are available). Use schema lookup for structural questions:
 
 ```bash
-python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py summary TaskDialog
-python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py summary InvokeConnectorTaskAction
+node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js summary TaskDialog
+node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js summary InvokeConnectorTaskAction
 ```
 
 The schema **cannot** tell you the specific inputs and outputs for each connector operation — those are connector-specific and only available through the verified sample catalog.
@@ -49,7 +49,7 @@ If the user requests an action **not in the catalog**, refuse and tell them:
 
 5. **Optionally look up the schema** for structural reference:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py summary InvokeConnectorTaskAction
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js summary InvokeConnectorTaskAction
    ```
    Use this to verify or adapt structural properties if the user has specific needs (e.g., changing connection mode, adding timeout settings). Do NOT use it for inputs/outputs.
 

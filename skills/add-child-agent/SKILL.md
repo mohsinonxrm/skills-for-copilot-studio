@@ -1,7 +1,7 @@
 ---
 description: Add or configure a child agent (AgentDialog) for Copilot Studio. Use when the user asks to create a sub-agent, child agent, or specialist agent.
 argument-hint: <child agent description>
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Glob
 context: fork
 agent: author
 ---
@@ -20,8 +20,8 @@ Create a new child agent (AgentDialog) that the parent agent's orchestrator can 
 
 2. **Look up the AgentDialog schema**:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve AgentDialog
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve OnToolSelected
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve AgentDialog
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve OnToolSelected
    ```
 
 3. **Determine from the user**:

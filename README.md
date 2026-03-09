@@ -73,7 +73,6 @@ For multi-step workflows, Claude will chain agents automatically:
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed
-- [Python 3.8+](https://www.python.org/) with `pip install pyyaml`
 - [VS Code](https://code.visualstudio.com/) with the [Copilot Studio Extension](https://github.com/microsoft/vscode-copilotstudio)
 
 ## Workflow

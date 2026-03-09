@@ -1,7 +1,7 @@
 ---
 description: Add generative answer nodes (SearchAndSummarizeContent or AnswerQuestionWithAI) to a Copilot Studio topic. Use this instead of /add-node when the user asks to add grounded answers, knowledge search, generative answers, or AI-powered responses — these nodes require specific patterns (ConditionGroup follow-up, knowledge source references, autoSend, responseCaptureType) that /add-node does not cover.
 argument-hint: <topic-name or "new">
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Edit, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Edit, Glob
 context: fork
 agent: author
 ---
@@ -34,7 +34,7 @@ If the user just wants the agent to answer questions from its knowledge, adding 
 
 3. **Look up the schema**:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve SearchAndSummarizeContent
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve SearchAndSummarizeContent
    ```
 
 4. **Read `settings.mcs.yml`** to check if `GenerativeActionsEnabled: true`. This determines the best pattern:

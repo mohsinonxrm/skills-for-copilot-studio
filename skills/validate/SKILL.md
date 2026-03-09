@@ -1,7 +1,7 @@
 ---
 description: Validate a Copilot Studio YAML file against the schema and best practices. Use when the user asks to check, validate, or verify a YAML file.
 argument-hint: <path-to-yaml-file>
-allowed-tools: Bash(python *schema-lookup.py *), Read, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Glob
 ---
 
 # Validate YAML Structure
@@ -14,7 +14,7 @@ Validate a Copilot Studio YAML file against the schema and best practices.
 
 2. **Run the automated validation script first**:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py validate $ARGUMENTS
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js validate $ARGUMENTS
    ```
    This checks: YAML parsing, kind detection, required properties, duplicate IDs, Power Fx `=` prefix, variable scope.
 
@@ -29,7 +29,7 @@ Validate a Copilot Studio YAML file against the schema and best practices.
 
 5. **Look up the schema** for context-aware validation:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve <kind>
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve <kind>
    ```
 
 6. **Perform additional manual checks**:

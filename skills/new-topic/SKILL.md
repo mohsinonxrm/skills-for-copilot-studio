@@ -1,7 +1,7 @@
 ---
 description: Create a new Copilot Studio topic YAML file. Use when the user asks to create a new topic, conversation flow, or dialog for their agent.
 argument-hint: <topic description>
-allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Glob
+allowed-tools: Bash(node *schema-lookup.bundle.js *), Read, Write, Glob
 context: fork
 agent: author
 ---
@@ -31,12 +31,12 @@ Generate a new Copilot Studio topic YAML file based on user requirements.
 
 3. **MANDATORY: Verify ALL `kind:` values against the schema** before writing them:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py kinds                    # List all valid kind values
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve AdaptiveDialog   # Resolve trigger structure
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py resolve <TriggerType>    # Resolve specific trigger
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py search <ActionKind>      # Verify an action kind exists
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js kinds                    # List all valid kind values
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve AdaptiveDialog   # Resolve trigger structure
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve <TriggerType>    # Resolve specific trigger
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js search <ActionKind>      # Verify an action kind exists
    ```
-   **NEVER write a `kind:` value you haven't verified exists in the schema.** This is the #1 source of hallucination errors. If `schema-lookup.py search <kind>` returns no results, the kind does NOT exist — do not use it.
+   **NEVER write a `kind:` value you haven't verified exists in the schema.** This is the #1 source of hallucination errors. If `schema-lookup.bundle.js search <kind>` returns no results, the kind does NOT exist — do not use it.
 
 4. **Determine the trigger type** from the user's description:
    - `OnRecognizedIntent` — For topics triggered by user phrases (most common)
@@ -58,7 +58,7 @@ Generate a new Copilot Studio topic YAML file based on user requirements.
 
 8. **MANDATORY: Validate the generated file** after saving:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.py validate <saved-file.yml>
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js validate <saved-file.yml>
    ```
    If validation fails, fix the issues before reporting success to the user.
 
