@@ -2,6 +2,8 @@
 description: Add or configure a child agent (AgentDialog) for Copilot Studio. Use when the user asks to create a sub-agent, child agent, or specialist agent.
 argument-hint: <child agent description>
 allowed-tools: Bash(python *schema-lookup.py *), Read, Write, Glob
+context: fork
+agent: author
 ---
 
 # Add Child Agent

@@ -1,6 +1,8 @@
 ---
 description: Run tests against a published Copilot Studio agent and analyze results. Use when the user asks to test the agent, run tests, validate published changes, or check if the agent works correctly. The agent must have been pushed and published in Copilot Studio first.
 allowed-tools: Bash(node *run-tests.js *), Bash(npm install *), Read, Write, Glob, Grep, Edit
+context: fork
+agent: test
 ---
 
 # Run Tests
