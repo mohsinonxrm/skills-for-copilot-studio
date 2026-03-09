@@ -1,88 +1,112 @@
-# Build Agents with Claude Code
+# Copilot Studio Plugin for Claude Code
 
-Use **Claude Code** to author Microsoft Copilot Studio agents via YAML — create topics, add nodes, configure settings, and more, all from the CLI.
+A **Claude Code plugin** for Microsoft Copilot Studio YAML authoring. Create, edit, validate, and test Copilot Studio agents using YAML files — from any project directory.
 
-## Quick Start
+## Installation
 
-### 1. Prerequisites
+### From a local clone (development / testing)
+
+```bash
+# One-off session — load the plugin without installing
+claude --plugin-dir /path/to/copilot-studio
+
+# Or install persistently (available in every project)
+claude plugin install /path/to/copilot-studio --scope user
+```
+
+### From a marketplace (when published)
+
+```bash
+claude plugin install copilot-studio
+```
+
+Once installed, the plugin is available globally — no need to `cd` into this repo.
+
+## Quick Start — End-to-End Example
+
+Suppose you cloned a Copilot Studio agent to `C:\Users\you\CopilotStudio\MyAgent1`:
+
+```bash
+# 1. Start Claude Code in your agent's directory
+cd C:\Users\you\CopilotStudio\MyAgent1
+claude --plugin-dir C:\Users\you\ClaudeCodeProj\agents-build-agents
+
+# 2. Ask the author agent to design and create an agent
+@copilot-studio:author I need to solve this problem [...], can you please design and implement a Copilot Studio agent that does that, in this folder?
+
+# 3. Ask the author agent to add a node to it
+@copilot-studio:author Add a question node to the ReturnPolicy topic asking for the order number
+
+# 4. After pushing & publishing in Copilot Studio, test it
+@copilot-studio:test The agent has always failed responding that we have 30-days return window when asked about the return policy. I made some changes and published, can you please test?
+
+# 5. If something is wrong, troubleshoot
+@copilot-studio:troubleshoot The ReturnPolicy topic isn't triggering when I ask about it, instead I get Conversation Boosting. Why?
+```
+
+That's it. The plugin auto-discovers your agent's YAML files via `**/agent.mcs.yml`.
+
+## Three Specialized Agents
+
+Always interact with the plugin through its agents. Each agent has the domain context, reference material, and skills it needs to handle your request end-to-end.
+
+| Agent | Use When | Invoke |
+|-------|----------|--------|
+| **author** | Building or modifying YAML files (topics, actions, knowledge, triggers, settings, nodes, child agents, global variables, generative answers, best practices) | `@copilot-studio:author` |
+| **test** | Testing published agents, sending test messages, analyzing results | `@copilot-studio:test` |
+| **troubleshoot** | Debugging issues — wrong topic triggered, validation errors, unexpected behavior | `@copilot-studio:troubleshoot` |
+
+> **How it works**: You talk to the agents in natural language. Each agent has internal skills (schema lookup, YAML generation, validation, test execution, etc.) that it uses automatically — you don't need to invoke them yourself.
+
+### Chaining agents
+
+For multi-step workflows, Claude will chain agents automatically:
+
+```
+# Claude delegates to author, then to test
+"Create a PTO topic and then test it with 'How do I request time off?'"
+
+# Claude delegates to troubleshoot, then to author
+"The greeting topic has a validation error — fix it"
+```
+
+## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed
-- [Python 3.8+](https://www.python.org/) with `pip install -r requirements.txt`
 - [VS Code](https://code.visualstudio.com/) with the [Copilot Studio Extension](https://github.com/microsoft/vscode-copilotstudio)
 
-### 2. Clone this repo
+## Workflow
+
+1. **Clone** the agent with the Copilot Studio VS Code Extension into any directory
+2. **Start Claude Code** in that directory with the plugin loaded
+3. **Author** changes via `@copilot-studio:author`
+4. **Push** changes with the VS Code Extension (creates a draft)
+5. **Publish** in Copilot Studio UI (makes changes live)
+6. **Test** via `@copilot-studio:test`
+
+## Plugin Management
 
 ```bash
-git clone <this-repo-url>
-cd agents-build-agents
-pip install -r requirements.txt
+# Install persistently (user-wide)
+claude plugin install /path/to/copilot-studio --scope user
+
+# Install for a specific project (shared via version control)
+claude plugin install /path/to/copilot-studio --scope project
+
+# Check installed plugins
+claude plugin list
+
+# Temporarily disable without uninstalling
+claude plugin disable copilot-studio
+
+# Re-enable
+claude plugin enable copilot-studio
+
+# Uninstall
+claude plugin uninstall copilot-studio
 ```
-
-### 3. Add your schema file
-
-Place your `bot.schema.yaml-authoring.json` in the `reference/` directory.
-
-### 4. Clone your Copilot Studio agent
-
-Use the **Copilot Studio VS Code Extension** to clone your agent into the `agents/` directory. This downloads your agent's YAML files (topics, actions, knowledge, settings).
-
-### 5. Start Claude Code
-
-```bash
-claude
-```
-
-That's it. Claude Code reads `CLAUDE.md` automatically and all skills are available immediately.
-
-## How to Use
-
-### Slash commands
-
-Invoke any skill directly with `/<skill-name>`:
-
-```
-/new-topic A FAQ topic that answers questions about our return policy
-/add-node SendActivity node to Greeting topic
-/edit-triggers Greeting
-/validate agents/My Agent/topics/Greeting.mcs.yml
-/list-topics
-```
-
-### Natural language
-
-Skills also activate automatically when you ask naturally:
-
-```
-Create a new greeting topic that welcomes users
-Add a Question node to the FAQ topic asking for the order number
-What schema properties does SendActivity have?
-List all topics in my agent
-```
-
-### Publishing changes
-
-After making changes, push them back using the **Copilot Studio VS Code Extension** in VS Code.
-
-## Available Skills
-
-| Skill | Description |
-|-------|-------------|
-| `/lookup-schema` | Query schema definitions |
-| `/new-topic` | Create a new topic |
-| `/add-node` | Add or modify nodes in a topic |
-| `/validate` | Validate YAML structure |
-| `/add-knowledge` | Add knowledge source (public website or SharePoint) |
-| `/list-topics` | List all topics in the agent |
-| `/list-kinds` | List available YAML kind values |
-| `/edit-agent` | Edit agent settings or instructions |
-| `/edit-triggers` | Modify topic triggers (phrases and model description) |
-| `/add-child-agent` | Add/configure child agents |
-| `/add-generative-answers` | Add generative answer nodes |
-| `/add-global-variable` | Add a global variable |
-| `/run-tests` | Run tests and analyze failures |
 
 ## Key Resources
 
-- [CLAUDE.md](CLAUDE.md) — Project instructions (loaded automatically by Claude Code)
-- [REFERENCE.md](REFERENCE.md) — YAML reference tables (triggers, actions, variables, entities, templates)
 - [SETUP_GUIDE.md](SETUP_GUIDE.md) — Detailed step-by-step setup and testing guide
+- `skills/_reference/SKILL.md` — YAML reference tables (triggers, actions, variables, Power Fx)

@@ -1,10 +1,8 @@
-# Copilot Studio Claude Code Project - Git Ignore
+# Copilot Studio Claude Code Plugin - Git Ignore
 
-# Agents clones (ignore contents, keep directory)
-agents/*/
 *.zip
 
-# Agent tests
+# Agent tests (user-specific)
 tests/test-results*
 tests/settings.json
 tests/agents.json
@@ -12,13 +10,17 @@ tests/.token_cache.json
 tests/node_modules/
 tests/package-lock.json
 
-# Python cache
+# Python cache (legacy)
 __pycache__/
 *.pyc
 *.pyo
 
-# Claude Code local permissions (user-specific trust preferences)
-.claude/settings.local.json
+# Schema lookup build artifacts (only the bundled schema-lookup.js ships)
+scripts/node_modules/
+scripts/package-lock.json
+
+# Claude Code local settings (not part of the plugin)
+.claude/
 
 # VS Code settings (optional - remove if you want to share settings)
 .vscode/
