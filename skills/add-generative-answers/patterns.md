@@ -6,11 +6,18 @@ Use when you want to control how the response is displayed (custom formatting, a
 
 ```yaml
 actions:
+  # Step 1: Generate an optimized search query that preserves conversational context
+  - kind: CreateSearchQuery
+    id: createSearchQuery_<random>
+    userInput: =System.Activity.Text
+    result: Topic.SearchQuery
+
+  # Step 2: Search knowledge sources with the optimized query
   - kind: SearchAndSummarizeContent
     id: searchContent_<random>
     autoSend: false
     variable: Topic.Answer
-    userInput: =System.Activity.Text
+    userInput: =Topic.SearchQuery.SearchQuery
     fileSearchDataSource:
       searchFilesMode:
         kind: DoNotSearchFiles
@@ -32,7 +39,7 @@ actions:
             activity: "{Topic.Answer.Text.MarkdownContent}"
 ```
 
-Since `autoSend: false`, the response is stored in `Topic.Answer`. The ConditionGroup checks if an answer was found, then SendActivity displays it using `{Topic.Answer.Text.MarkdownContent}`.
+`CreateSearchQuery` rewrites the user's raw message into an optimized search query that preserves conversational context (e.g., if the user says "tell me more about that", the query will include the actual subject from conversation history). Since `autoSend: false`, the response is stored in `Topic.Answer`. The ConditionGroup checks if an answer was found, then SendActivity displays it using `{Topic.Answer.Text.MarkdownContent}`.
 
 ## Pattern 2: Orchestrator Pattern (inputs/outputs)
 
@@ -52,11 +59,18 @@ beginDialog:
   id: main
   intent: {}
   actions:
+    # Step 1: Generate an optimized search query that preserves conversational context
+    - kind: CreateSearchQuery
+      id: createSearchQuery_<random>
+      userInput: =Topic.QuestionToBeAnswered
+      result: Topic.SearchQuery
+
+    # Step 2: Search knowledge sources with the optimized query
     - kind: SearchAndSummarizeContent
       id: searchContent_<random>
       autoSend: false
       variable: Topic.SearchResult
-      userInput: =Topic.QuestionToBeAnswered
+      userInput: =Topic.SearchQuery.SearchQuery
       fileSearchDataSource:
         searchFilesMode:
           kind: DoNotSearchFiles
@@ -87,7 +101,7 @@ outputType:
       type: String
 ```
 
-This works because the orchestrator collects `QuestionToBeAnswered` from the user, the topic searches knowledge and extracts the content into `Topic.Response`, and the orchestrator uses that output to formulate a response. No explicit SendActivity needed — the orchestrator handles it.
+This works because the orchestrator collects `QuestionToBeAnswered` from the user, `CreateSearchQuery` rewrites it into an optimized search query preserving conversational context, the topic searches knowledge and extracts the content into `Topic.Response`, and the orchestrator uses that output to formulate a response. No explicit SendActivity needed — the orchestrator handles it.
 
 ## Pattern 3: Fallback Search (all knowledge, autoSend default)
 
@@ -101,10 +115,17 @@ beginDialog:
   id: main
   priority: -1
   actions:
+    # Step 1: Generate an optimized search query that preserves conversational context
+    - kind: CreateSearchQuery
+      id: createSearchQuery_<random>
+      userInput: =System.Activity.Text
+      result: Topic.SearchQuery
+
+    # Step 2: Search all agent knowledge sources with the optimized query
     - kind: SearchAndSummarizeContent
       id: searchContent_<random>
       variable: Topic.Answer
-      userInput: =System.Activity.Text
+      userInput: =Topic.SearchQuery.SearchQuery
 
     - kind: ConditionGroup
       id: conditionGroup_<random>

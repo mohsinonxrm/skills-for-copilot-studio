@@ -33,10 +33,10 @@
 
 ## `userInput` Options
 
-`System.Activity.Text` is the last message sent by the user. But other options exist:
+**Always use `CreateSearchQuery` before `SearchAndSummarizeContent`/`SearchKnowledgeSources`** to preserve conversational context. The optimized query is accessed via `Topic.<ResultVar>.SearchQuery`.
 
-- **User's last message**: `userInput: =System.Activity.Text` — most common for direct Q&A
-- **Topic input variable**: `userInput: =Topic.QuestionToBeAnswered` — when the orchestrator or a previous node provides the question
+- **From CreateSearchQuery result** (recommended): `userInput: =Topic.SearchQuery.SearchQuery` — preserves conversational context, resolves references like "tell me more about that"
+- **Topic input variable via CreateSearchQuery**: First pass `Topic.QuestionToBeAnswered` through `CreateSearchQuery`, then use the result
 - **Crafted expression**: You can combine strings with variables to build a specific query, e.g., ask the user for a topic and then search for "Give me information about " & that topic
 
 ## SearchKnowledgeSources Property Reference
@@ -65,7 +65,7 @@ Returns raw search results from knowledge sources **without AI summarization**. 
 
 ## CreateSearchQuery Property Reference
 
-Uses AI to generate an optimized search query from the user's input. Pair with `SearchKnowledgeSources` for better search accuracy.
+Uses AI to generate an optimized search query from the user's input, preserving conversational context. **Always precede `SearchAndSummarizeContent` and `SearchKnowledgeSources` with `CreateSearchQuery`** — passing raw `System.Activity.Text` directly loses conversational context (e.g., "tell me more about that" would search literally instead of resolving the reference). The generated query is stored in `result` and accessed via `result.SearchQuery`.
 
 ```yaml
 - kind: CreateSearchQuery

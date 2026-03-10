@@ -7,17 +7,24 @@ beginDialog:
   id: main
   priority: -1
   actions:
-    - kind: SearchAndSummarizeContent
-      id: searchContent_REPLACE1
-      variable: Topic.Answer
+    # Step 1: Generate an optimized search query that preserves conversational context
+    - kind: CreateSearchQuery
+      id: createSearchQuery_REPLACE1
       userInput: =System.Activity.Text
+      result: Topic.SearchQuery
+
+    # Step 2: Search all agent knowledge sources with the optimized query
+    - kind: SearchAndSummarizeContent
+      id: searchContent_REPLACE2
+      variable: Topic.Answer
+      userInput: =Topic.SearchQuery.SearchQuery
 
     - kind: ConditionGroup
-      id: conditionGroup_REPLACE2
+      id: conditionGroup_REPLACE3
       conditions:
-        - id: conditionItem_REPLACE3
+        - id: conditionItem_REPLACE4
           condition: =!IsBlank(Topic.Answer)
           actions:
             - kind: EndDialog
-              id: endDialog_REPLACE4
+              id: endDialog_REPLACE5
               clearTopicQueue: true

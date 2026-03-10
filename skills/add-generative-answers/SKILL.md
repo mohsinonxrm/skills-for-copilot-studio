@@ -33,8 +33,9 @@ If the user just wants the agent to answer questions from its knowledge, adding 
    - **Add to existing topic**: Read the target topic and insert a SearchAndSummarizeContent node
    - **Create new search topic**: Generate a complete topic with the search pattern
 
-3. **Look up the schema**:
+3. **Look up the schema** for both nodes:
    ```bash
+   node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve CreateSearchQuery
    node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve SearchAndSummarizeContent
    ```
 
@@ -48,9 +49,11 @@ If the user just wants the agent to answer questions from its knowledge, adding 
    - Should **general model knowledge** also be used, or only the configured knowledge sources?
    - Should the response be **sent automatically** to chat, or **processed first** (e.g., custom formatting, adaptive card, combined with other data)?
 
-6. **Generate unique IDs** for all nodes (format: `<nodeType>_<6-8 random alphanumeric>`).
+6. **Always precede `SearchAndSummarizeContent` with `CreateSearchQuery`** to preserve conversational context. Never pass `=System.Activity.Text` directly to `SearchAndSummarizeContent` — the raw last message may lack context (e.g., "tell me more about that"). `CreateSearchQuery` rewrites the input into an optimized search query. Access the result via `Topic.<ResultVar>.SearchQuery`.
 
-7. **Build the YAML** using the appropriate pattern. For full YAML examples, see [patterns.md](patterns.md). For the complete property reference table, see [property-reference.md](property-reference.md).
+7. **Generate unique IDs** for all nodes (format: `<nodeType>_<6-8 random alphanumeric>`).
+
+8. **Build the YAML** using the appropriate pattern. For full YAML examples, see [patterns.md](patterns.md). For the complete property reference table, see [property-reference.md](property-reference.md).
 
 ## SearchAndSummarizeContent vs AnswerQuestionWithAI
 
