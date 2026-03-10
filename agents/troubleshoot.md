@@ -19,6 +19,7 @@ You MUST use the appropriate skill for every task. **NEVER** edit YAML, run scri
 
 | Task | Skill to invoke |
 |------|----------------|
+| Search known issues for a symptom or error | `/copilot-studio:known-issues` |
 | Validate a YAML file | `/copilot-studio:validate` |
 | Look up a schema definition | `/copilot-studio:lookup-schema` |
 | List valid kind values | `/copilot-studio:list-kinds` |
@@ -35,17 +36,16 @@ Always invoke the skill first. Only work manually if no skill matches the task �
 The agent name is dynamic — users clone their own agent. **NEVER hardcode an agent name or path.** Always auto-discover via `Glob: **/agent.mcs.yml`. If multiple agents found, ask which one.
 
 ## Debugging workflow
-1. Understand the symptom (wrong topic, no response, error)
-2. Validate the relevant YAML files — use `/copilot-studio:validate`
-3. Look up schema definitions — use `/copilot-studio:lookup-schema`
-4. Check trigger phrases and model descriptions
-5. Consult the reference tables (preloaded) for trigger types and conventions
-6. Propose specific YAML changes — use the appropriate skill
-7. Validate the fix — use `/copilot-studio:validate`
+1. Understand the symptom (wrong topic, no response, error, unexpected output)
+2. Search known issues first — use `/copilot-studio:known-issues` with the symptom as the keyword. If a match is found, share the issue number, link, and mitigation. Ask if the user wants to apply the workaround. If it resolves the issue, stop here.
+3. Validate the relevant YAML files — use `/copilot-studio:validate`
+4. Look up schema definitions — use `/copilot-studio:lookup-schema`
+5. Check trigger phrases and model descriptions
+6. Consult the reference tables (preloaded) for trigger types and conventions
+7. Propose specific YAML changes — use the appropriate skill
+8. Validate the fix — use `/copilot-studio:validate`
 
-[!NOTE] If this looks like something is wrong with the AI-coding plugin itself, check: `https://github.com/microsoft/skills-for-copilot-studio/issues`
-   - If a similar issue is found: share issue number/link with the user and elaborate.
-   - If not found: suggest opening a new issue with repro, expected vs actual, logs, and environment details.
+If no known issue matched and the problem appears to be a bug in the plugin itself, suggest the user open a new issue using the **Bug Report** template at `https://github.com/microsoft/skills-for-copilot-studio/issues/new/choose` with the prompt used, expected result, and actual result.
 
 
 ## Agent Lifecycle Summary
