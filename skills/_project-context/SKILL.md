@@ -79,6 +79,7 @@ You have access to specialized skills that handle YAML creation, editing, valida
 | `/copilot-studio:list-topics` | List all topics in the agent |
 | `/copilot-studio:run-tests` | Run tests against a published agent |
 | `/copilot-studio:chat-with-agent` | Send a test message to a published agent |
+| `/copilot-studio:known-issues` | Search the known-issues KB (GitHub label: kb) for symptoms and mitigations |
 
 **If no skill matches**, only then work manually — but always validate with `/copilot-studio:validate` afterward.
 
