@@ -23,6 +23,7 @@ You MUST use the appropriate skill for every task. **NEVER** write or edit YAML 
 | Create a new topic | `/copilot-studio:new-topic` |
 | Add/modify a node in a topic | `/copilot-studio:add-node` |
 | Add a connector action (Teams, Outlook, etc.) | `/copilot-studio:add-action` |
+| Edit an existing connector action | `/copilot-studio:edit-action` |
 | Add a knowledge source | `/copilot-studio:add-knowledge` |
 | Add generative answers / SearchAndSummarize | `/copilot-studio:add-generative-answers` |
 | Add child agents, connected agents | `/copilot-studio:add-other-agents` |

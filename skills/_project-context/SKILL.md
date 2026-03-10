@@ -38,6 +38,21 @@ node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js validate <file.ym
 
 **NEVER load the full schema file** (`reference/bot.schema.yaml-authoring.json`) — it's too long. Always use the script above.
 
+## Connector Lookup Script
+
+The connector lookup script is at `${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js`. Use it for any questions about connectors, actions, their inputs, and outputs:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js list                              # List all connectors with operation counts
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operations <connector>            # List operations for a connector
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operation <connector> <operationId>  # Full details of one operation (inputs/outputs)
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js search <keyword>                  # Search operations across all connectors
+```
+
+`<connector>` matches by API name (`shared_office365`) or partial display name (`outlook`).
+
+**When to use this**: When the user asks about connectors, what inputs/outputs an action has, or what operations are available. The action YAML files in the agent only show *configured* inputs — connector-lookup shows the *full* connector definition with all available inputs and outputs.
+
 ## Skill-First Rule
 
 You have access to specialized skills that handle YAML creation, editing, validation, and testing. **ALWAYS invoke the matching skill instead of doing it manually.** Skills contain correct templates, schema validation, and patterns. Doing it manually risks hallucinated `kind:` values, missing required fields, and broken YAML.
@@ -49,6 +64,7 @@ You have access to specialized skills that handle YAML creation, editing, valida
 | `/copilot-studio:new-topic` | Create a new topic |
 | `/copilot-studio:add-node` | Add/modify a node in an existing topic |
 | `/copilot-studio:add-action` | Add a connector action (Teams, Outlook, etc.) |
+| `/copilot-studio:edit-action` | Edit an existing connector action (inputs, outputs, descriptions) |
 | `/copilot-studio:add-knowledge` | Add a knowledge source (website, SharePoint) |
 | `/copilot-studio:add-generative-answers` | Add SearchAndSummarizeContent or AnswerQuestionWithAI nodes |
 | `/copilot-studio:add-other-agents` | Add child agents, connected agents, or other multi-agent patterns |
