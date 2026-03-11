@@ -68,7 +68,7 @@ System triggers (`OnConversationStart`, `OnUnknownIntent`, `OnError`, etc.) fire
 
 Connector actions (`kind: TaskDialog`) invoke external connector operations. They are stored in `actions/` and require a connection reference in `connectionreferences.mcs.yml`.
 
-**Use `/add-action` to create actions from the verified catalog.** The schema can describe the structural properties of `TaskDialog` and `InvokeConnectorTaskAction`, but the specific inputs and outputs for each connector operation are connector-specific — use only verified sample templates.
+**Use `/add-action` to create new actions from available connectors.** The schema describes the structural properties of `TaskDialog` and `InvokeConnectorTaskAction`, but the specific inputs and outputs for each connector operation are connector-specific — use the connector lookup script (`connector-lookup.bundle.js`) to get the full operation details.
 
 ### Action Structure
 
@@ -203,8 +203,6 @@ Templates are bundled with the plugin. Skills that use templates reference them 
 | Disambiguation | `templates/topics/disambiguation.topic.mcs.yml` | OnSelectIntent flow |
 | Agent | `templates/agents/agent.mcs.yml` | GptComponentMetadata |
 | Connector Action (generic) | `templates/actions/connector-action.mcs.yml` | TaskDialog with connector (structural reference) |
-| Action: Teams Post Message | `templates/actions/samples/teams-post-message.yml` | TaskDialog — Post message in Teams chat/channel |
-| Action: Outlook Create Event | `templates/actions/samples/outlook-create-event.yml` | TaskDialog — Create Outlook calendar event |
 | Knowledge (Public Website) | `templates/knowledge/public-website.knowledge.mcs.yml` | PublicSiteSearchSource |
 | Knowledge (SharePoint) | `templates/knowledge/sharepoint.knowledge.mcs.yml` | SharePointSearchSource |
 | Global Variable | `templates/variables/global-variable.variable.mcs.yml` | GlobalVariableComponent |

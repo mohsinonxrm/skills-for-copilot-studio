@@ -20,7 +20,9 @@ Connector actions need:
 
 ## Connector Lookup
 
-Help the user find the right connector and operation before they go to the UI. Use the connector lookup tool:
+Help the user find the right connector and operation before they go to the UI. Use the connector lookup tool. Important: The connector lookup script only covers a subset of connectors (run `list` to see which ones). If the user's requested connector is not in the list, tell the user they need to find and add the connector action entirely through the Copilot Studio portal, then ask them to pull again the files locally. Once pulled, `/copilot-studio:edit-action` can still be used to customize the YAML.
+
+When the connector IS available, use the lookup tool to help the user before they go to the UI:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js list
@@ -44,7 +46,7 @@ Use these to help the user understand:
    ```bash
    node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js search "<user's description>"
    ```
-   If no match, try broader terms. Show the user what's available.
+   If no match, try broader terms. If the connector is not available in the lookup script at all after different tries, inform the user that this connector is not in the local reference and they will need to add the action through the Copilot Studio UI.
 
 3. **Show the operation details** so the user knows exactly what to look for in the UI:
    ```bash
@@ -75,12 +77,12 @@ Use these to help the user understand:
 
    > Would you like me to edit the action YAML? I can modify input descriptions, switch between automatic and manual inputs, change the connection mode, and more. Just say the word and I'll use `/copilot-studio:edit-action`.
 
-## Reference Catalog
+## Structural Reference
 
-For curated examples of well-structured actions (Teams post message, Outlook create event), see:
+For the generic structural template of a connector action (TaskDialog), see:
 
 ```
-Read: ${CLAUDE_SKILL_DIR}/catalog.md
+Read: ${CLAUDE_SKILL_DIR}/../../templates/actions/connector-action.mcs.yml
 ```
 
-These samples show best practices for how actions should be structured and can serve as reference when editing actions.
+Use this alongside `connector-lookup operation` output to understand both the YAML structure and the full inputs/outputs for a specific operation.

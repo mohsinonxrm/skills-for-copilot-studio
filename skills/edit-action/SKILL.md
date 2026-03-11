@@ -9,11 +9,13 @@ agent: author
 
 # Edit Connector Action
 
-Edit an existing connector action (`kind: TaskDialog`) in a Copilot Studio agent. Uses connector definitions to understand the full operation schema (inputs, outputs, types) and catalog samples as structural reference.
+Edit an existing connector action (`kind: TaskDialog`) in a Copilot Studio agent. Uses connector definitions to understand the full operation schema (inputs, outputs, types) and the generic action template as structural reference.
 
 ## Connector Lookup
 
-Use the connector lookup tool to understand the operation's full schema:
+Help the user find the right connector and operation before they go to the UI. Use the connector lookup tool. Important: The connector lookup script only covers a subset of connectors (run `list` to see which ones). If the user's requested connector is not in the list, tell the user they need to find and add the connector action entirely through the Copilot Studio portal, then ask them to pull again the files locally. Once pulled, `/copilot-studio:edit-action` can still be used to customize the YAML.
+
+When the connector IS available, use the lookup tool to help the user before they go to the UI:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js list                              # List connectors
@@ -45,17 +47,18 @@ node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js summary InvokeCon
 
 3. **Identify the connector and operation**:
    - Read the action YAML to find `action.operationId` and the connector API name from `connectionreferences.mcs.yml`
-   - Look up the full operation details:
+   - Look up the full operation details (if the connector is available in the lookup script):
      ```bash
      node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operation <connector> <operationId>
      ```
    - This gives you the complete list of available inputs and outputs for the operation
+   - If the connector is not found, try broader terms. If still not found, inform the user and proceed with edits based on the existing action YAML and schema-lookup only
 
-4. **Read catalog samples** for structural reference:
+4. **Read the generic action template** for structural reference:
    ```
-   Read: ${CLAUDE_SKILL_DIR}/../add-action/catalog.md
+   Read: ${CLAUDE_SKILL_DIR}/../../templates/actions/connector-action.mcs.yml
    ```
-   If a matching sample exists in `${CLAUDE_SKILL_DIR}/../../templates/actions/samples/`, read it to see best practices for that connector.
+   Use this alongside the connector-lookup output from step 3 to understand the YAML structure and available inputs/outputs.
 
 5. **Make the requested edits** using the Edit tool. Common modifications:
 
