@@ -13,28 +13,31 @@ You are working inside a Copilot Studio agent project. All YAML files have the `
 ## Project Structure
 
 ```
-<agent-dir>/                          # Auto-discover via Glob: **/agent.mcs.yml
-├── agent.mcs.yml                     # Agent metadata (display name, schema version)
-├── settings.mcs.yml                  # Agent settings (schemaName, GenerativeActionsEnabled, instructions)
-├── topics/                           # Conversation topics (AdaptiveDialog YAML files)
-├── actions/                          # Connector-based actions (TaskDialog YAML files)
-├── knowledge/                        # Knowledge sources (KnowledgeSourceConfiguration YAML files)
-├── variables/                        # Global variables (GlobalVariableComponent YAML files)
-└── agents/                           # Child agents (AgentDialog YAML files, each in its own subfolder)
+<agent-dir>/           # Auto-discover via Glob: **/agent.mcs.yml
+├── agent.mcs.yml      # Agent metadata (display name, schema version)
+├── settings.mcs.yml   # Agent settings (schemaName, GenerativeActionsEnabled, instructions)
+├── topics/            # Conversation topics (AdaptiveDialog YAML files)
+├── actions/           # Connector-based actions (TaskDialog YAML files)
+├── knowledge/         # Knowledge sources (KnowledgeSourceConfiguration YAML files)
+├── variables/         # Global variables (GlobalVariableComponent YAML files)
+└── agents/            # Child agents (AgentDialog YAML files, each in its own subfolder)
 ```
 
 ## Schema Lookup Script
 
-The schema lookup script is at `${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js`. Use it for any schema queries:
+When you write new YAML files, be sure to use the schema lookup script to understand the schema, including mandatory fields, definitions, and references. The script is located at `${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js`, and you can use it in the terminal as follows:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js lookup SendActivity       # Look up a definition
 node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js search trigger             # Search by keyword
+node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js lookup SendActivity        # Look up a definition
 node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js resolve AdaptiveDialog     # Resolve with $refs
 node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js kinds                      # List all valid kind values
 node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js summary Question           # Compact overview
 node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js validate <file.yml>        # Validate a YAML file
 ```
+
+If you already know the specific definition you want to look up, use `lookup`. If you want to explore the schema around a certain topic, use `search` or `summary`.
+Always check the schema before writing YAML to ensure you include all required fields and use valid values.
 
 **NEVER load the full schema file** (`reference/bot.schema.yaml-authoring.json`) — it's too long. Always use the script above.
 
@@ -43,44 +46,21 @@ node ${CLAUDE_SKILL_DIR}/../../scripts/schema-lookup.bundle.js validate <file.ym
 The connector lookup script is at `${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js`. Use it for any questions about connectors, actions, their inputs, and outputs:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js list                              # List all connectors with operation counts
-node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operations <connector>            # List operations for a connector
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js list                                 # List all connectors with operation counts
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operations <connector>               # List operations for a connector
 node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js operation <connector> <operationId>  # Full details of one operation (inputs/outputs)
-node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js search <keyword>                  # Search operations across all connectors
+node ${CLAUDE_SKILL_DIR}/../../scripts/connector-lookup.bundle.js search <keyword>                     # Search operations across all connectors
 ```
 
 `<connector>` matches by API name (`shared_office365`) or partial display name (`outlook`).
 
-**When to use this**: When the user asks about connectors, what inputs/outputs an action has, or what operations are available. The action YAML files in the agent only show *configured* inputs — connector-lookup shows the *full* connector definition with all available inputs and outputs.
+**When to use this**: When you need to understand available connectors, what inputs/outputs an action has, or what operations are available. The action YAML files in the agent only show *configured* inputs — connector-lookup shows the *full* connector definition with all available inputs and outputs.
 
-## Skill-First Rule
+## Skill-First Rule (VERY IMPORTANT)
 
-You have access to specialized skills that handle YAML creation, editing, validation, and testing. **ALWAYS invoke the matching skill instead of doing it manually.** Skills contain correct templates, schema validation, and patterns. Doing it manually risks hallucinated `kind:` values, missing required fields, and broken YAML.
-
-### Available Skills
-
-| Skill | When to use |
-|-------|-------------|
-| `/copilot-studio:new-topic` | Create a new topic |
-| `/copilot-studio:add-node` | Add/modify a node in an existing topic |
-| `/copilot-studio:add-action` | Add a connector action (Teams, Outlook, etc.) |
-| `/copilot-studio:edit-action` | Edit an existing connector action (inputs, outputs, descriptions) |
-| `/copilot-studio:add-knowledge` | Add a knowledge source (website, SharePoint) |
-| `/copilot-studio:add-generative-answers` | Add SearchAndSummarizeContent or AnswerQuestionWithAI nodes |
-| `/copilot-studio:add-other-agents` | Add child agents, connected agents, or other multi-agent patterns |
-| `/copilot-studio:add-global-variable` | Add a global variable |
-| `/copilot-studio:add-adaptive-card` | Add an adaptive card to a topic |
-| `/copilot-studio:edit-agent` | Edit agent settings, instructions, or display name |
-| `/copilot-studio:edit-triggers` | Modify trigger phrases or model description |
-| `/copilot-studio:best-practices` | JIT glossary, user context, OnActivity initialization |
-| `/copilot-studio:validate` | Validate YAML structure against schema |
-| `/copilot-studio:lookup-schema` | Query a schema definition |
-| `/copilot-studio:list-kinds` | List all valid kind values |
-| `/copilot-studio:list-topics` | List all topics in the agent |
-| `/copilot-studio:run-tests` | Run tests against a published agent |
-| `/copilot-studio:chat-with-agent` | Send a test message to a published agent (M365 SDK) |
-| `/copilot-studio:directline-chat` | Send a test message via DirectLine v3 REST (token endpoint or secret) |
-| `/copilot-studio:known-issues` | Search the known-issues KB (GitHub label: kb) for symptoms and mitigations |
+You have access to specialized skills that handle YAML creation, editing, validation, and testing. **ALWAYS invoke the matching skill instead of doing it manually.**
+Skills contain correct templates, schema validation, and patterns. Doing it manually risks hallucinated `kind:` values, missing required fields, and broken YAML.
+Example skills include `/copilot-studio:new-topic` for creating new topics, `/copilot-studio:add-action` for adding connector actions and tools, and `/copilot-studio:validate` for validating YAML files.
 
 **If no skill matches**, only then work manually — but always validate with `/copilot-studio:validate` afterward.
 
