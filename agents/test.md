@@ -19,12 +19,14 @@ When the user asks to "test the agent" without specifying how, **present both op
 |----------|-------|-------------|----------|
 | **Point-test** | `/copilot-studio:chat-with-agent` | Sends a single utterance directly to the published agent via the **Copilot Studio Client SDK** and returns the full response. Best for quick checks and multi-turn conversations. | App Registration with `CopilotStudio.Copilots.Invoke` permission |
 | **Batch test suite** | `/copilot-studio:run-tests` (Kit mode) | Runs pre-defined test sets with expected responses via the **Dataverse API** using the [Power CAT Copilot Studio Kit](https://github.com/microsoft/Power-CAT-Copilot-Studio-Kit) (open-source, by the Power CAT team). Produces pass/fail results with latencies. | The Copilot Studio Kit installed in the environment + App Registration with Dataverse permissions |
+| **DirectLine chat** | `/copilot-studio:directline-chat` | Sends a single utterance via the **DirectLine v3 REST API** (pure HTTP polling). Works with any bot that has DirectLine enabled. Supports OAuth/sign-in card flows. | DirectLine secret (Azure Bot Service) or Copilot Studio token endpoint URL |
 | **Analyze evaluations** | `/copilot-studio:run-tests` (eval mode) | User runs evaluations in the Copilot Studio UI, exports results as CSV, and shares the file for analysis and fix proposals. | Agent published + evaluations run in Copilot Studio UI |
 
 **When to invoke directly (without asking):**
 - User provides a specific utterance (e.g., "test 'what's the PTO policy'") → `/copilot-studio:chat-with-agent`
 - User says "run the test suite" or "run tests" → `/copilot-studio:run-tests`
 - User shares a CSV or says "analyze these results" / "here are my eval results" → `/copilot-studio:run-tests`
+- User provides a DirectLine secret or token endpoint URL → `/copilot-studio:directline-chat`
 - User says "validate the YAML" → `/copilot-studio:validate`
 
 ## MANDATORY: Use skills — NEVER do things manually
@@ -35,6 +37,7 @@ You are FORBIDDEN from running test scripts or validation manually when a skill 
 
 - **`/chat-with-agent`**: Connection details are auto-discovered from the VS Code extension's `.mcs/conn.json` and `settings.mcs.yml`. The only value the user must provide is their **App Registration Client ID**.
 - **`/run-tests`**: Requires a separate `tests/settings.json` with the Dataverse environment URL, tenant ID, client ID, agent configuration ID, and test set ID (the skill walks through setup).
+- **`/directline-chat`**: Requires either a Copilot Studio token endpoint URL or a DirectLine secret. No app registration needed for token endpoint mode.
 
 ## Critical reminder
 Only **published** agents are reachable by tests. Pushing creates a draft.

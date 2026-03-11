@@ -78,7 +78,8 @@ You have access to specialized skills that handle YAML creation, editing, valida
 | `/copilot-studio:list-kinds` | List all valid kind values |
 | `/copilot-studio:list-topics` | List all topics in the agent |
 | `/copilot-studio:run-tests` | Run tests against a published agent |
-| `/copilot-studio:chat-with-agent` | Send a test message to a published agent |
+| `/copilot-studio:chat-with-agent` | Send a test message to a published agent (M365 SDK) |
+| `/copilot-studio:directline-chat` | Send a test message via DirectLine v3 REST (token endpoint or secret) |
 | `/copilot-studio:known-issues` | Search the known-issues KB (GitHub label: kb) for symptoms and mitigations |
 
 **If no skill matches**, only then work manually — but always validate with `/copilot-studio:validate` afterward.
