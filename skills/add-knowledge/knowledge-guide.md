@@ -25,7 +25,7 @@ Copilot Studio has two modes:
 For most agents, automatic mode is sufficient. Add explicit topics only when you need flow control or source scoping.
 
 ### The UniversalSearchTool
-When the orchestrator detects a knowledge search intent in the user's message, it calls a single internal tool: **`UniversalSearchTool`**.
+Copilot Studio has exactly **one built-in tool** for knowledge retrieval: the **`UniversalSearchTool`**. There is no other out-of-the-box mechanism — every knowledge search goes through this tool, whether it runs automatically (orchestrator-driven) or is triggered from an `OnKnowledgeRequested` topic.
 
 **How it works:**
 - It searches **all configured knowledge sources** simultaneously, regardless of their type (public website, SharePoint, Dataverse, uploaded files, AI Search, etc.)
@@ -45,7 +45,7 @@ When the orchestrator detects a knowledge search intent in the user's message, i
 ## Knowledge Best Practices
 
 ### Source Selection
-- Use **PublicSiteSearchSource** for publicly accessible websites (docs, marketing sites, FAQs)
+- Use **PublicSiteSearchSource** for publicly accessible websites (docs, marketing sites, FAQs). This source uses **Bing search** under the hood to find relevant snippets within the scoped URL — it does not crawl or summarize full web pages. See URL Guidelines below for depth limits.
 - Use **SharePointSearchSource** for internal company content
 - Use **GraphConnectorSearchSource** for enterprise systems indexed via Microsoft Graph connectors (ServiceNow, Salesforce, Jira, custom connectors, etc.) — see below
 - All other types (Dataverse, AI Search, uploaded files, SQL) must be configured via the Copilot Studio UI
@@ -89,9 +89,17 @@ Use the template at `templates/knowledge/graph-connector.knowledge.mcs.yml`.
 - Use descriptive, lowercase, hyphenated filenames: `hr-policies.knowledge.mcs.yml` not `ks1.knowledge.mcs.yml`
 
 ### URL Guidelines
-**Public websites:**
-- Provide the most specific URL that covers the needed content (e.g. `https://docs.example.com/products/` not `https://example.com/`)
-- The site must be publicly crawlable — no login required
+**Public websites (`PublicSiteSearchSource`):**
+
+> **How it works:** `PublicSiteSearchSource` uses **Bing search** to find relevant snippets from the web scope you provide. It is **not** a web crawler or page summarizer — it cannot return or summarize a full web page. It finds and returns relevant information based on the user's intent, scoped to the URL you specify.
+
+- The URL defines a **search scope**, not a pointer to a specific page. Think of it as telling Bing: "only return results from under this URL path"
+- **Maximum URL depth: 2 levels** beyond the domain. For example:
+  - `https://microsoft.com/products/surface` — works (2 levels: `products/surface`)
+  - `https://docs.example.com/en-us/azure` — works (2 levels: `en-us/azure`)
+  - `https://microsoft.com/en-us/microsoft-365/business` — **ignored** (3 levels: too deep)
+  - This is a current platform limitation and may be relaxed in the future
+- The site must be publicly accessible — no login required
 - Avoid URLs that return dynamic content or require JavaScript rendering
 - Subdomains are treated as separate sources; add them individually if needed
 
@@ -101,6 +109,7 @@ Use the template at `templates/knowledge/graph-connector.knowledge.mcs.yml`.
 - Supported document types: PDF, Word (.docx), PowerPoint (.pptx), plain text
 - Ensure the agent's service account has read access to the SharePoint site
 - Example: `https://contoso.sharepoint.com/sites/HR/Shared%20Documents/Policies`
+- **Limitation:** SharePoint knowledge sources use semantic search that returns relevant chunks, not full file content. For scenarios requiring complete file retrieval (e.g., JIT glossaries), use Dataverse storage or Agent Flows with SharePoint connectors
 
 ### Content Quality
 - Documents should have clear headings and titles — Copilot Studio uses these for chunking and citation
@@ -166,10 +175,105 @@ source:
 
 ### `OnKnowledgeRequested` Trigger
 
-This trigger fires on a topic every time the orchestrator calls the `UniversalSearchTool` (i.e. every time a knowledge search intent is detected). Use it to:
+This trigger fires on a topic every time the orchestrator invokes the `UniversalSearchTool` (i.e. every time a knowledge search intent is detected).
+
+> **Key concept**: `OnKnowledgeRequested` does not replace the `UniversalSearchTool` — it **hooks into** the same tool's execution. When the orchestrator decides a knowledge search is needed, it invokes the `UniversalSearchTool`. If an `OnKnowledgeRequested` topic exists, it fires as part of that same invocation, giving you a chance to run custom logic before or alongside the search. The tool is still the `UniversalSearchTool`; your topic just extends what happens when it runs.
+
+Use it to:
 - Intercept knowledge requests and run custom logic before or after the search
 - Load context, set variables, or pre-process the query
 - Route the search to specific knowledge sources based on user context
+- Bring in knowledge from sources the `UniversalSearchTool` cannot reach natively (see use cases below)
+
+#### Use Cases
+
+**1. Controlling the default `UniversalSearchTool` behavior**
+
+The most common use case. The `OnKnowledgeRequested` topic fires before the `UniversalSearchTool` returns its results, letting you:
+- **Override `System.SearchQuery`** — rewrite or enrich the search query before it reaches the knowledge sources (e.g. append department context, restrict scope)
+- **Route to specific knowledge sources** — use a `SearchAndSummarizeContent` node with `SearchSpecificKnowledgeSources` to limit which sources are searched based on user context, query classification, or global variables
+- **Add conditions** — gate knowledge search behind a condition (e.g. only search HR sources when `Global.UserDepartment = "HR"`)
+
+See the "Routing Searches by Category or Country" section below for full YAML examples.
+
+**2. Bringing knowledge from external or non-standard sources**
+
+The `UniversalSearchTool` only searches configured knowledge sources (public websites, SharePoint document libraries, Graph connectors, Dataverse, etc.). Some data lives in places it cannot reach natively — for example:
+
+- **SharePoint Lists** — the built-in `SharePointSearchSource` indexes document libraries (files), not SharePoint Lists (structured row data like events, inventory, tickets)
+- **External REST APIs** — custom services, third-party search engines, internal microservices
+- **Databases** — SQL databases, custom data stores not exposed as Dataverse tables
+
+For these scenarios, use `OnKnowledgeRequested` to call the external source yourself (via a connector action or HTTP request) and write the results into `System.SearchResults`. The orchestrator then treats them exactly like native knowledge results — grounding, citations, and all.
+
+**Example: Searching a SharePoint List for company events**
+
+A SharePoint List stores upcoming company events (columns: Title, Date, Location, Description). The built-in SharePoint knowledge source cannot index this — it only indexes documents. Use `OnKnowledgeRequested` to query the list via the SharePoint connector and return the results as knowledge.
+
+**SharePoint File Content Retrieval Limitations**
+
+SharePoint knowledge sources (`SharePointSearchSource`) have an important architectural limitation: they use semantic search to return relevant text chunks rather than complete file content. This affects scenarios requiring full file retrieval, such as:
+
+- **JIT glossaries** that need to load complete CSV/text files into variables
+- **Configuration files** that contain structured data for agent processing
+- **Template files** that need to be processed in their entirety
+
+**Workarounds for full file content access:**
+
+1. **Dataverse approach:** Store files in Dataverse (directly or via SharePoint sync), which supports full content retrieval through knowledge sources
+2. **Agent Flow approach:** Create an Agent Flow using SharePoint connector's "Get file content" action to retrieve complete files, then call the flow from topics
+3. **Hybrid approach:** Use SharePoint for document search/discovery, then retrieve specific files via Agent Flows when full content is needed
+
+These limitations are platform-level and may be addressed in future releases.
+
+```yaml
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnKnowledgeRequested
+  id: main
+  actions:
+    # 1. Call the SharePoint connector to query the Events list
+    - kind: InvokeConnectorAction
+      id: queryEvents_abc123
+      connectionReference: shared_sharepointonline
+      connectionProperties:
+        # Connection reference to the SharePoint connector configured in the solution
+        kind: ConnectionReferenceBySchema
+        connectionReferenceSchemaName: cr123_SharedSharePointOnline
+      operationId: GetItems
+      input:
+        parameters/dataset: https://contoso.sharepoint.com/sites/HR
+        parameters/table: Events           # Internal name of the SharePoint List
+        parameters/$filter: "Title ne null" # OData filter (optional)
+      output:
+        statusCode: Topic.StatusCode
+        body: Topic.EventItems
+
+    # 2. Transform the list items into the System.SearchResults format
+    - kind: SetVariable
+      id: setResults_def456
+      variable: System.SearchResults
+      value: "=ForAll(Topic.EventItems.value,
+        {
+          snippet: ThisRecord.Description & \" | Date: \" & Text(ThisRecord.Date, \"yyyy-mm-dd\") & \" | Location: \" & ThisRecord.Location,
+          title: ThisRecord.Title,
+          url: \"https://contoso.sharepoint.com/sites/HR/Lists/Events/DispForm.aspx?ID=\" & Text(ThisRecord.ID)
+        }
+      )"
+```
+
+**What happens at runtime:**
+1. User asks: "What company events are coming up?"
+2. Orchestrator detects knowledge intent → invokes `UniversalSearchTool` → `OnKnowledgeRequested` fires
+3. The topic calls the SharePoint connector to fetch list items
+4. Results are transformed into `{snippet, title, url}` records and written to `System.SearchResults`
+5. The orchestrator receives these results alongside any standard knowledge source results, grounds the LLM response on them, and includes citations linking back to the list items
+
+**Key points:**
+- The `System.SearchResults` format is always the same: `{snippet, title, url}` — regardless of where the data comes from
+- Results written to `System.SearchResults` are merged with results from the standard knowledge sources (unless all sources use `triggerCondition: =false`)
+- Use `System.SearchQuery` or `System.KeywordSearchQuery` to pass the user's query to your external source for server-side filtering when the source supports it
+- This pattern works with any connector action (SharePoint, HTTP, Dataverse, custom connectors) — the only requirement is transforming the response into the `{snippet, title, url}` format
 
 #### Special System Variables (only available in `OnKnowledgeRequested` topics)
 
