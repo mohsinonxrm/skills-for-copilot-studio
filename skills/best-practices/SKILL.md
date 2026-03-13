@@ -45,6 +45,15 @@ Prevents child agents (connected agents) from sending messages directly to the u
 - The user wants a child agent to return data without messaging the user
 - The user is confused about the completion setting on a child agent
 - The parent agent needs to control all user-facing responses
+## Date Context → [date-context.md](date-context.md)
+
+Provides the current date to the orchestrator through agent instructions using Power FX (`{Text(Today(),DateTimeFormat.LongDate)}`). Enables accurate responses to date-related questions by giving the orchestrator explicit awareness of "today" for interpreting relative timeframes.
+
+**Read this best-practice when:**
+- Users ask date-relative questions ("What's next week?", "upcoming events", "recent announcements")
+- The agent needs to filter time-sensitive knowledge sources
+- Date interpretation is causing confusion or hallucinations
+- The agent handles schedules, calendars, deadlines, or time-sensitive content
 
 ## Combining patterns
 
