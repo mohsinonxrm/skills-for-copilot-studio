@@ -2,10 +2,16 @@
 
 A **JIT glossary** loads a list of customer-specific acronyms into a global variable the first time each conversation receives a user message. The orchestrator then uses that variable to interpret acronyms correctly before searching knowledge sources or generating answers — improving retrieval quality without adding noise to automatic searches.
 
-## Pattern Overview
+## Available Approaches
+
+The JIT glossary pattern has **current platform limitations** that affect which approach you can use based on your data source:
+
+### Approach 1: Dataverse-Based (Supported Today)
+
+**Works with:** Dataverse files or SharePoint documents migrated to Dataverse
 
 ```
-CSV file on SharePoint (.txt in CSV format)
+CSV file in Dataverse
         ↓
 Knowledge source (triggerCondition: =false)    ← never auto-searched
         ↓
@@ -16,6 +22,56 @@ OnActivity topic (type: Message)               ← fires on first user message
         ↓
 Agent instructions reference {Global.Glossary} ← orchestrator uses it for context
 ```
+
+**Pros:**
+- ✅ Can retrieve full file content needed for orchestration
+- ✅ Supported by current skill implementation
+- ✅ No custom development required
+
+**Cons:**
+- ❌ SharePoint to Dataverse sync has indexing delays
+- ❌ Requires UI configuration for SharePoint sync
+- ❌ Additional complexity for pure SharePoint scenarios
+
+### Approach 2: Real-Time SharePoint with Agent Flow (Future Enhancement)
+
+**Current limitation:** SharePoint Online knowledge sources use semantic search that cannot output the full file content needed at the orchestration step.
+
+**Solution under development:** Agent Flow using SharePoint connector to directly retrieve file content, transform to string, and return to the JIT topic.
+
+```
+CSV file on SharePoint (.txt in CSV format)
+        ↓
+Global variable: Global.Glossary               ← loaded once per conversation
+        ↓
+OnActivity topic (type: Message)               ← fires on first user message
+  condition: =IsBlank(Global.Glossary)         ← JIT: only runs if not loaded yet
+        ↓
+Agent Flow: Get SharePoint file content        ← retrieves complete file via connector
+  transform to string → return to topic       ← bypasses semantic search limitations
+        ↓
+Set Global.Glossary = flow result             ← stores full CSV content
+        ↓
+Agent instructions reference {Global.Glossary} ← orchestrator uses it for context
+```
+
+**Pros:**
+- ✅ True real-time access to SharePoint files
+- ✅ No sync delays or indexing dependencies
+- ✅ Direct file access without migration
+
+**Cons:**
+- ❌ Not yet supported by current skill implementation
+- ❌ Requires custom Agent Flow development
+- ❌ More complex setup and maintenance
+
+> **Note:** These limitations are temporary. Full SharePoint Online support is planned for future skill releases.
+
+## Choosing Your Approach
+
+- **Use Approach 1** if you need JIT glossary functionality today and can work with Dataverse storage or accept sync delays
+- **Consider Approach 2** if real-time SharePoint access is critical and you can develop custom Agent Flows
+- **Wait for future updates** if neither approach meets your current requirements
 
 ## Why `OnActivity (type: Message)` and not `OnConversationStart`
 
@@ -30,7 +86,9 @@ Agent instructions reference {Global.Glossary} ← orchestrator uses it for cont
 - The glossary content is stable and load-once per session is sufficient (no per-message refresh needed)
 - You do **not** want the glossary returned directly as an answer — it is context-only
 
-## Step 1 — Prepare the CSV File
+## Implementation Steps (Approach 1: Dataverse-Based)
+
+### Step 1 — Prepare and Store the CSV File
 
 Create a plain-text file in CSV format with a header row. Two columns only:
 
@@ -44,28 +102,37 @@ UAT,User Acceptance Testing
 
 A starter template is available at `templates/knowledge/glossary.csv`.
 
+**File requirements:**
 - Use **ACRONYM** and **Definition** as the exact column headers
 - One acronym per row
 - Save as a `.txt` file (not `.csv`) — this ensures Copilot Studio treats it as a document
-- Upload the file to SharePoint and **note the full URL to the file** (e.g. `.../Glossary/acronyms.txt`) — you will use the file URL, not the folder URL, in the knowledge source
 
-## Step 2 — Create the Knowledge Source
+**Storage options for Dataverse approach:**
+1. **Direct Dataverse upload:** Upload the file directly to a Dataverse knowledge source through the Copilot Studio UI
+2. **SharePoint to Dataverse sync:** Upload to SharePoint, then configure Dataverse sync in the Copilot Studio UI (note: sync delays may occur)
+
+### Step 2 — Create the Knowledge Source
+
+> **Important:** This approach requires Dataverse storage. SharePoint knowledge sources cannot be used for JIT glossary due to semantic search limitations.
 
 Create a file in `agents/<AGENT-NAME>/knowledge/` for the glossary source. Example: `glossary.knowledge.mcs.yml`.
 
+For Dataverse-stored files, you **must configure the knowledge source through the Copilot Studio UI** first, then reference it in YAML:
+
 ```yaml
 # Name: Customer Glossary
-# Customer-specific acronyms in CSV format. Two columns: ACRONYM,Definition with a header row. Load this source explicitly — do not include in automatic searches.
+# Customer-specific acronyms in CSV format. Two columns: ACRONYM,Definition with a header row. Load this source explicitly — do not include in automatic searches. REQUIRES DATAVERSE STORAGE.
 kind: KnowledgeSourceConfiguration
 source:
-  kind: SharePointSearchSource
+  # Configure via Copilot Studio UI, then reference here
+  # SharePointSearchSource NOT supported for JIT glossary due to semantic search limitations
   triggerCondition: false
-  site: https://contoso.sharepoint.com/sites/Internal/Shared%20Documents/Glossary/acronyms.txt
 ```
 
 **Key points:**
 - `triggerCondition: false` — this source is **never** included in automatic `UniversalSearchTool` searches. It can only be called explicitly via `SearchAndSummarizeContent`.
-- Replace the `site` URL with the **full path to the specific `.txt` file** on SharePoint — not the folder. Pointing to the folder would index all documents in it.
+- **Dataverse requirement:** The file must be stored in Dataverse (directly uploaded or synced from SharePoint via UI configuration)
+- **SharePoint limitation:** Direct SharePoint knowledge sources cannot retrieve full file content needed for JIT variables
 - Line 2 (plain comment) describes the content so the orchestrator can identify it in the template list — write it clearly.
 
 ## Step 3 — Create the Global Variable
@@ -144,13 +211,26 @@ instructions: |
 ## Validation Checklist
 
 Before testing:
-- [ ] The CSV file is a `.txt` file on SharePoint (not a `.csv` file) and is readable by the agent service account
-- [ ] The `site` URL in the knowledge source points to the **specific file** (e.g. `.../Glossary/acronyms.txt`), not the folder
+- [ ] The CSV file is stored in **Dataverse** (not directly on SharePoint) and is accessible by the agent
 - [ ] `triggerCondition: =false` is on the knowledge source
+- [ ] The knowledge source is configured via Copilot Studio UI for Dataverse access
 - [ ] The knowledge source reference in `SearchAndSummarizeContent` matches the exact `.mcs.yml` filename
 - [ ] All `REPLACE` IDs are replaced with unique generated IDs
 - [ ] `Global.Glossary` variable exists at `agents/<AGENT-NAME>/variables/Glossary.mcs.yml` with `schemaName` matching the agent prefix
 - [ ] Agent instructions reference `{Global.Glossary}` with clear usage rules
+
+## Real-Time SharePoint Approach (Future Implementation)
+
+For scenarios requiring direct real-time SharePoint access, the following Agent Flow pattern will be supported in future releases:
+
+1. **Agent Flow Creation:** Build a flow using SharePoint connector's "Get file content" action
+2. **Content Transformation:** Convert file content to string format using appropriate transformations
+3. **Topic Integration:** Call the Agent Flow from the JIT topic and store result in `Global.Glossary`
+4. **Error Handling:** Implement fallback behavior for file access failures
+
+This approach bypasses the semantic search limitations by directly accessing file content through connector actions rather than knowledge source retrieval.
+
+> **Coming soon:** Step-by-step instructions for this approach will be added when skill support is available.
 
 ## Testing
 

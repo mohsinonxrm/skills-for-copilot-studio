@@ -109,6 +109,7 @@ Use the template at `templates/knowledge/graph-connector.knowledge.mcs.yml`.
 - Supported document types: PDF, Word (.docx), PowerPoint (.pptx), plain text
 - Ensure the agent's service account has read access to the SharePoint site
 - Example: `https://contoso.sharepoint.com/sites/HR/Shared%20Documents/Policies`
+- **Limitation:** SharePoint knowledge sources use semantic search that returns relevant chunks, not full file content. For scenarios requiring complete file retrieval (e.g., JIT glossaries), use Dataverse storage or Agent Flows with SharePoint connectors
 
 ### Content Quality
 - Documents should have clear headings and titles — Copilot Studio uses these for chunking and citation
@@ -208,6 +209,22 @@ For these scenarios, use `OnKnowledgeRequested` to call the external source your
 **Example: Searching a SharePoint List for company events**
 
 A SharePoint List stores upcoming company events (columns: Title, Date, Location, Description). The built-in SharePoint knowledge source cannot index this — it only indexes documents. Use `OnKnowledgeRequested` to query the list via the SharePoint connector and return the results as knowledge.
+
+**SharePoint File Content Retrieval Limitations**
+
+SharePoint knowledge sources (`SharePointSearchSource`) have an important architectural limitation: they use semantic search to return relevant text chunks rather than complete file content. This affects scenarios requiring full file retrieval, such as:
+
+- **JIT glossaries** that need to load complete CSV/text files into variables
+- **Configuration files** that contain structured data for agent processing
+- **Template files** that need to be processed in their entirety
+
+**Workarounds for full file content access:**
+
+1. **Dataverse approach:** Store files in Dataverse (directly or via SharePoint sync), which supports full content retrieval through knowledge sources
+2. **Agent Flow approach:** Create an Agent Flow using SharePoint connector's "Get file content" action to retrieve complete files, then call the flow from topics
+3. **Hybrid approach:** Use SharePoint for document search/discovery, then retrieve specific files via Agent Flows when full content is needed
+
+These limitations are platform-level and may be addressed in future releases.
 
 ```yaml
 kind: AdaptiveDialog

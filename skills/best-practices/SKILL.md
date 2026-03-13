@@ -28,6 +28,16 @@ Loads the current user's Microsoft 365 profile (country, department, display nam
 - The agent needs to call the M365 Users connector (`GetMyProfile` / `UserGet_V2`)
 - The user asks about personalizing responses based on who is chatting
 
+## Date Context → [date-context.md](date-context.md)
+
+Provides the current date to the orchestrator through agent instructions using Power FX (`{Text(Today(),DateTimeFormat.LongDate)}`). Enables accurate responses to date-related questions by giving the orchestrator explicit awareness of "today" for interpreting relative timeframes.
+
+**Read this best-practice when:**
+- Users ask date-relative questions ("What's next week?", "upcoming events", "recent announcements")
+- The agent needs to filter time-sensitive knowledge sources
+- Date interpretation is causing confusion or hallucinations
+- The agent handles schedules, calendars, deadlines, or time-sensitive content
+
 ## Combining patterns
 
 You can also combine more than one best pratice. For example, when using both glossary and user context, merge them into a **single** `conversation-init` topic rather than creating separate OnActivity topics. Use the template at `${CLAUDE_SKILL_DIR}/../../templates/topics/conversation-init.topic.mcs.yml`. The individual files explain the details.
