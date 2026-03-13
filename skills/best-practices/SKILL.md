@@ -1,7 +1,7 @@
 ---
 user-invocable: false
 name: best-practices
-description: "Best practices for Copilot Studio agents. Covers JIT glossary loading (customer acronyms, terminology), JIT user context provisioning (M365 profile, country, department), the shared OnActivity initialization pattern, dynamic topic redirects with Switch expressions, preventing child agents from responding directly to users, and Dataverse knowledge retrieval patterns. USE FOR: glossary, acronyms, user context, user profile, country-aware answers, JIT initialization, OnActivity provisioning, conversation-init, personalized knowledge, dynamic redirect, Switch, BeginDialog, if/then/else replacement, child agent responses, completion setting, SendMessageTool, output variables, connected agents, Dataverse, Table Knowledge, List Rows, SearchQuery, Dataverse MCP, cached rows, AI Prompt, DV Table. DO NOT USE FOR: general knowledge sources (use add-knowledge), topic creation (use new-topic)."
+description: "Best practices for Copilot Studio agents. Covers JIT glossary loading (customer acronyms, terminology), JIT user context provisioning (M365 profile, country, department), the shared OnActivity initialization pattern, dynamic topic redirects with Switch expressions, and preventing child agents from responding directly to users. USE FOR: glossary, acronyms, user context, user profile, country-aware answers, JIT initialization, OnActivity provisioning, conversation-init, personalized knowledge, dynamic redirect, Switch, BeginDialog, if/then/else replacement, child agent responses, completion setting, SendMessageTool, output variables, connected agents. DO NOT USE FOR: general knowledge sources (use add-knowledge), topic creation (use new-topic)."
 context: fork
 agent: author
 ---
@@ -45,16 +45,6 @@ Prevents child agents (connected agents) from sending messages directly to the u
 - The user wants a child agent to return data without messaging the user
 - The user is confused about the completion setting on a child agent
 - The parent agent needs to control all user-facing responses
-
-## Dataverse Knowledge Retrieval → [dataverse-knowledge-retrieval.md](dataverse-knowledge-retrieval.md)
-
-Decision matrix for choosing the right approach to retrieve knowledge from Dataverse tables. Covers Table Knowledge, List Rows, Dataverse MCP, SearchQuery, Topic + cached rows variable, and AI Prompt + DV Table Rows — with escalation paths between each.
-
-**Read this best-practice when:**
-- The user needs to query or retrieve data from Dataverse tables
-- The user is choosing between Table Knowledge, List Rows, SearchQuery, or Dataverse MCP
-- The user is experiencing latency, throttling, or control issues with their current Dataverse retrieval approach
-- The user asks about caching rows, ranked search, or LLM reasoning over Dataverse data
 
 ## Combining patterns
 
